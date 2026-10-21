@@ -29,3 +29,6 @@ dist/
 *.h5
 *.keras
 *.onnx
+
+# Local study notes
+/notes.md
