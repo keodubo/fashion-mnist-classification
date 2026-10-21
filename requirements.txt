@@ -1,0 +1,6 @@
+# Initial exploration and classical-model dependencies; not yet version-locked.
+numpy
+pandas
+matplotlib
+scikit-learn
+jupyterlab

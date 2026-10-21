@@ -1,0 +1,41 @@
+For this course you will have to make a project and present it in the final weeks.
+
+Goal
+
+The goal of the project is to show me that you have a solid understanding of the basics of Machine Learning. What I would like to see is that you are able of:
+
+Define a task to solve and select appropriate datasets that help you solve it
+Analyze and process a dataset
+Choose the appropriate model and know the strengths and weaknesses of the models you select
+Train, validate and measure the performance of your models
+Bonus if you have models with different hyperparameters and you run validation or cross-validation to choose them
+Analyze the results of your trained model: analyze the errors of your model, know whether they are under/overfitting and how to correct that, see for which data samples and try to get why it is failing there
+Interpret your results in the context of the task that you wanted to achieve
+Instructions
+
+Updated model-count clarification provided by the student on 14 October 2026:
+- 4 simple models; or
+- 3 models: 2 simple + 1 complex (such as an ANN, CNN, or transformer); or
+- 2 models: 1 simple + 1 very complex.
+The instructor's distinction between complex and very complex has not yet been specified. The original brief below is preserved for reference; use the updated model-count clarification for planning.
+
+You will have to select a task that you want to do (the one you like the most, really). Then, select a dataset that can help you do that task. Select either: 4 basic ML models (k-NN, linear regression, logistic regression, naive Bayes, decision trees, tree ensembles) or 2 basic models and a deep ML model (deep neural networks or convolutional neural networks and maybe n-gram models with bag of words or TF-IDF count as difficult too). After selecting a dataset and a model, just try to do what I stated in the Goals section: do the project end-to-end.
+
+Deliverables
+
+By the last week of November you will have to send me the code that you used in your project. 
+In the last week of November you will also make a 15 minutes oral presentation in the classroom.
+Examples of projects from the previous course
+
+Detecting cars in image and classifying the status of traffic (transfer learning + CNNs)
+Predicting the result of a match (NFL League, World Cup, ..., many people like this kind of projects somehow)
+How survived the Titanic? (Classic Titanic dataset from Kaggle)
+Song popularity from song features (I think there should be some Spotify dataset out there)
+Predicting employee attrition
+Classifying emails into phishing, spam or ham (not spam)
+Credit risk analysis
+Stock price prediction (how do I get rich? tell me)
+Predicting the coordinates of a robot-arm based on the angles of its elbows
+You may also look for datasets in Kaggle and take ideas from there.
+
+Here is a Youtube video of an internal Cabify project (except for one or two small things, you should be able to fully understand her reasonings and doings over the whole video) https://www.kaggle.com/ https://www.youtube.com/watch?v=VYubMmJImZ8&time_continue=4&source_ve_path=MjM4NTE&embeds_referring_euri=https%3A%2F%2Fsifo.comillas.edu%2F&embeds_referring_origin=https%3A%2F%2Fsifo.comillas.edu
