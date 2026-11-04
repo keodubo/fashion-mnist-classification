@@ -1,0 +1,140 @@
+{
+  "operation": "Saved-evidence extension only; no training, inference or tuning",
+  "split_details": {
+    "subsets": [
+      {
+        "name": "Training",
+        "total": 48000,
+        "per_class": [
+          4800,
+          4800,
+          4800,
+          4800,
+          4800,
+          4800,
+          4800,
+          4800,
+          4800,
+          4800
+        ],
+        "proportions": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ]
+      },
+      {
+        "name": "Validation",
+        "total": 12000,
+        "per_class": [
+          1200,
+          1200,
+          1200,
+          1200,
+          1200,
+          1200,
+          1200,
+          1200,
+          1200,
+          1200
+        ],
+        "proportions": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ]
+      },
+      {
+        "name": "Official test",
+        "total": 10000,
+        "per_class": [
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        ],
+        "proportions": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ]
+      }
+    ],
+    "splitter": "StratifiedGroupKFold",
+    "n_splits": 5,
+    "validation_fold": 0,
+    "training_folds": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "shuffle": true,
+    "seed": 42,
+    "group_definition": "SHA256 of original uint8 image pixels; exact duplicates only",
+    "duplicate_groups": 0,
+    "all_models_share_saved_split": true,
+    "split_sha256": "e3942a2e625003307207e88c93a7c8b81bbcb7db54f0f1dfe79382352fc1e729",
+    "test_origin": "Official publisher-provided Fashion-MNIST test set; its balance was checked, not constructed"
+  },
+  "shirt_recall": 0.676,
+  "pairs": [
+    {
+      "other_class": "T-shirt/top",
+      "forward_count": 127,
+      "reverse_count": 63,
+      "forward_example_index": 474,
+      "reverse_example_index": 381
+    },
+    {
+      "other_class": "Coat",
+      "forward_count": 89,
+      "reverse_count": 32,
+      "forward_example_index": 117,
+      "reverse_example_index": 324
+    },
+    {
+      "other_class": "Pullover",
+      "forward_count": 71,
+      "reverse_count": 32,
+      "forward_example_index": 244,
+      "reverse_example_index": 49
+    }
+  ],
+  "example_selection": "First official test index in the saved CNN predictions matching each direction; illustrative, not a random sample",
+  "source_sha256": {
+    "notebooks/01-data-exploration.ipynb": "d0d64151ad2ed97e311b5cc79145e9d470b9ccf56bb01113e17ae915dc83d8ce",
+    "data/splits/train-validation-v1.json": "ad7a86daf50c500038cc4128c60f202c5bd74bee3270d0e257cff8bc42daf062",
+    "data/splits/train-validation-v1.npz": "e3942a2e625003307207e88c93a7c8b81bbcb7db54f0f1dfe79382352fc1e729",
+    "results/final-evaluation-v1/cnn-confusion-counts.csv": "278c43288f3fea758b25cf3ed34e5fc0e18d37178fa375b5960ce5f53d449591",
+    "results/final-evaluation-v1/predictions.csv": "010bb6175edc32b9d1789f53e46e126c55c17bb7ad5aef24cdef185cdc90b8e9",
+    "results/final-evaluation-v1/class-counts.csv": "9bafac6cfde74b2bd5c5fa22744d3aee9d296010bb9ae9ccb32a69d038aadf84"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "demo_count": 10,
+  "dataset_images": 80,
+  "prediction_parity": "All ten validation demos match saved predictions for all three models",
+  "model_sha256": {
+    "Logistic regression": "a224e1ce1d4deb758910a9583cf1fcffa09d635040f2fe8ad1f2e21622533ff7",
+    "kNN": "ea6ecc6f3b8adb599872c9278fba56f4093849afc81c96f5de1266bca741a78a",
+    "CNN": "1a389bf05cfe4c5eacd30ec30bc04302bfc7b74de32cd5d1b6e9570841388c01"
+  },
+  "notes": {
+    "walkthrough_split": "Validation",
+    "examples": "First validation observation per class; no selection by correctness",
+    "features": "First 8 channels of each saved activation tensor; grayscale uses a common maximum within each tensor",
+    "attribution": "Logistic-regression image shows signed pixel \u00d7 weight contributions for its predicted class, excluding the intercept; not a causal explanation",
+    "test": "Saved final-evaluation outputs only; no test inference performed to build this presentation"
+  }
+}

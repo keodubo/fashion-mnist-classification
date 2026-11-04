@@ -32,3 +32,11 @@ dist/
 
 # Local study notes
 /notes.md
+
+# Private presentation build files and runtime dependencies
+/presentation/.build/
+/presentation/html-v1/.preview/
+
+# Temporary presentation compilation and chart inspection
+/presentation/.build-script/
+/presentation/.chart-data-*/

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="An interactive Fashion-MNIST project presentation, with real images and recorded outputs from kNN, logistic regression and a CNN.">
+<title>The shape of learning — Fashion-MNIST</title>
+<style>/* STYLES */</style>
+</head>
+<body>
+<header class="masthead"><a href="#1" class="wordmark" aria-label="Return to the opening">THE SHAPE OF LEARNING<span>ML & AI / KEONI</span></a><div class="header-tools"><button id="overview-button" title="Scene overview (O)">Overview <kbd>O</kbd></button><button id="notes-button" title="Presenter notes (N)">Notes <kbd>N</kbd></button><button id="fullscreen-button" title="Fullscreen (F)">Fullscreen <kbd>F</kbd></button></div></header>
+<main id="deck" aria-label="Project presentation">
+<section class="scene hero" data-title="The question" data-time="50" aria-label="The question">
+  <div class="hero-art" id="hero-art" aria-hidden="true"></div>
+  <div class="hero-copy"><p class="eyebrow reveal">A CLOTHING CLASSIFICATION EXPERIMENT</p><h1 class="reveal">The shape<br>of <em>learning.</em></h1><p class="hero-question reveal">Can a CNN improve on models<br>that compare individual pixels?</p><button class="text-button reveal" data-next>Follow the experiment <span>↗</span></button></div>
+  <p class="hero-foot">Fashion-MNIST / kNN / Logistic regression / CNN</p>
+</section>
+<section class="scene" data-title="The dataset" data-time="30" aria-label="The dataset">
+  <div class="scene-heading"><p class="eyebrow">01 / THE MATERIAL</p><h2>Small images.<br><em>Surprisingly difficult distinctions.</em></h2><p>28 × 28 grayscale pixels. Ten labelled categories.</p></div>
+  <div class="dataset-layout"><div class="dataset-wall" id="dataset-wall"></div><aside class="dataset-aside"><div class="stat"><strong>70,000</strong><span>images in the complete dataset</span></div><div class="stat"><strong>10</strong><span>equally represented categories</span></div><p>Explore a category below.<br>These are real validation images.</p></aside></div>
+  <div class="class-selector" id="dataset-selector" aria-label="Dataset category"></div>
+</section>
+<section class="scene" data-title="Pixels and preprocessing" data-time="40" aria-label="Pixels and preprocessing">
+  <div class="scene-heading"><p class="eyebrow">02 / PREPARATION</p><h2>What does the model <em>actually see?</em></h2><p>An image is a grid of numbers. Preparation determines how the model receives them.</p></div>
+  <div class="pixels-layout"><div class="pixel-visual"><canvas id="pixel-canvas" width="560" height="560" aria-label="Enlarged validation image showing the 28 by 28 pixel grid"></canvas><div class="pixel-readout" id="pixel-readout">Hover over a pixel</div></div><div class="pixel-explanation"><p class="small-label">ONE PIXEL</p><div class="equation"><span id="pixel-raw">255</span><span class="operator">÷ 255 =</span><em id="pixel-scaled">1.000</em></div><p>Scale intensity from [0, 255] to [0, 1].<br>No missing values or invalid labels found.</p><div class="representation"><button id="representation-button" aria-pressed="false">Flatten into 784 features ↗</button><canvas id="vector-canvas" width="700" height="110" aria-label="784 normalised pixel values, arranged in row order"></canvas><p id="representation-label">CNN: preserve the 28 × 28 spatial grid.</p></div></div></div>
+  <p class="scene-foot">The pixel positions remain fixed when flattened; classical baselines do not explicitly use local shared convolution filters.</p>
+</section>
+<section class="scene" data-title="The data split" data-time="65" aria-label="Stratification and the saved data split">
+  <div class="scene-heading"><p class="eyebrow">03 / A FAIR COMPARISON</p><h2>One split. <em>Same class proportions.</em></h2><p>StratifiedGroupKFold · one fixed 80/20 split of 60,000 development images.</p></div>
+  <div class="stratification-layout"><div class="balance-visual"><div class="fold-strip" id="fold-strip" aria-label="Fold zero used for validation, the other four for training"></div><div id="balance-breakdown" class="balance-breakdown"></div><p id="balance-detail" class="balance-detail" aria-live="polite"></p></div><aside class="stratification-facts"><div class="balance-ten"><strong>10%</strong><span>each class / every subset</span></div><p><b>Stratification</b> preserves class proportions.</p><p><b>Grouping</b> keeps identical images together. No exact duplicate groups found.</p><p><b>Same saved split</b> for all three models.</p><p><b>Official test:</b> provided by Fashion-MNIST. We checked its balance.</p></aside></div>
+  <p class="scene-foot"><b>Not five-fold cross-validation.</b> Fold 0 for validation; folds 1–4 for training. The official test set was not constructed by us.</p>
+</section>
+<section class="scene model-scene" data-title="kNN: a neighbourhood vote" data-time="65" aria-label="kNN model walkthrough">
+  <div class="scene-heading"><p class="eyebrow">04 / MODEL ONE</p><h2>Find three neighbours. <em>Let them vote.</em></h2><p>Real nearest training images, found by the selected k = 3 model.</p></div>
+  <div class="knn-layout"><div class="query-block"><p class="small-label">VALIDATION INPUT</p><img class="model-input" id="knn-input" alt="Selected validation input"><p class="example-label" id="knn-input-label"></p></div><div class="flow-arrow" aria-hidden="true">→</div><div class="neighbours" id="neighbours"></div><div class="vote-result"><p class="small-label">MAJORITY VOTE</p><h3 id="knn-result"></h3><div id="knn-votes"></div><p>Euclidean distance<br>Equal weight for each neighbour</p><button class="text-button replay-button" data-replay="knn">Replay the vote ↻</button></div></div>
+  <div class="model-footer"><div class="demo-selector" data-demo-selector aria-label="Select validation example"></div><p class="recorded-label" data-demo-label></p></div>
+</section>
+<section class="scene model-scene" data-title="Logistic regression: weighted pixels" data-time="65" aria-label="Logistic regression model walkthrough">
+  <div class="scene-heading"><p class="eyebrow">05 / MODEL TWO</p><h2>784 pixels. <em>Ten class scores.</em></h2><p>The selected logistic regression uses L2 regularisation, C = 0.1.</p></div>
+  <div class="lr-layout"><div class="lr-images"><figure><img class="model-input" id="lr-input" alt="Selected validation input"><figcaption>Normalised input</figcaption></figure><span class="flow-arrow" aria-hidden="true">→</span><figure><img class="model-input" id="lr-heat" alt="Signed pixel times weight contributions for the model's predicted class"><figcaption id="lr-heat-label"></figcaption></figure><p class="heat-legend"><span>● Positive contribution</span><span>● Negative contribution</span></p></div><div class="lr-calculation"><p class="small-label">SCORE FOR THE PREDICTED CLASS</p><div class="score-equation" id="lr-equation"></div><p>Σ(pixel × weight) + intercept = logit · values shown rounded</p><div class="probabilities" id="lr-probabilities" aria-label="Largest logistic regression class probabilities"></div><p class="micro">Softmax turns the ten logits into class probabilities.</p></div></div>
+  <div class="model-footer"><div class="demo-selector" data-demo-selector aria-label="Select validation example"></div><p class="recorded-label" data-demo-label></p></div>
+</section>
+<section class="scene model-scene" data-title="CNN: learned image patterns" data-time="95" aria-label="CNN model walkthrough">
+  <div class="scene-heading"><p class="eyebrow">06 / MODEL THREE</p><h2>Keep the grid. <em>Learn the patterns.</em></h2><p>Actual feature maps from a forward pass through the selected CNN.</p></div>
+  <div class="cnn-pipeline"><div class="cnn-input-stage"><p class="small-label">INPUT / 1 × 28 × 28</p><div class="scan-image"><img id="cnn-input" alt="Selected validation input"><div class="scan-window" aria-hidden="true"></div></div><p>3 × 3 kernel · illustrative scan</p></div><div class="feature-stage"><p class="small-label">CONV 1 / ReLU / POOL</p><div class="feature-grid" id="cnn-maps-1"></div><p><b>32 × 14 × 14</b><br>8 of 32 channels shown</p></div><div class="feature-stage"><p class="small-label">CONV 2 / ReLU / POOL</p><div class="feature-grid" id="cnn-maps-2"></div><p><b>64 × 7 × 7</b><br>8 of 64 channels shown</p></div><div class="cnn-output"><p class="small-label">DENSE 128 / ReLU / DROPOUT 0.25</p><div class="dense-label">10 <span>logits</span></div><div id="cnn-probabilities" class="probabilities"></div><p class="micro">Softmax for displayed probabilities.<br>Training: raw logits → CrossEntropyLoss.</p></div></div>
+  <div class="model-footer"><div class="demo-selector" data-demo-selector aria-label="Select validation example"></div><p class="recorded-label" data-demo-label></p></div>
+</section>
+<section class="scene" data-title="Choosing settings" data-time="65" aria-label="Hyperparameter and architecture selection">
+  <div class="scene-heading"><p class="eyebrow">07 / DECISIONS, BACKED BY VALIDATION</p><h2>More complexity <em>has to earn its place.</em></h2></div>
+  <div class="tuning-tabs" role="group" aria-label="Choose model experiments"><button data-tuning="lr" aria-pressed="true">Logistic regression</button><button data-tuning="knn" aria-pressed="false">kNN</button><button data-tuning="cnn" aria-pressed="false">CNN</button></div>
+  <div class="tuning-layout"><div class="tuning-chart" id="tuning-chart"></div><aside id="tuning-explanation"></aside></div>
+  <p class="scene-foot">Choose configurations by validation accuracy. Within a CNN run, restore the checkpoint with lowest validation loss.</p>
+</section>
+<section class="scene" data-title="Learning and overfitting" data-time="55" aria-label="CNN learning curves">
+  <div class="scene-heading"><p class="eyebrow">08 / KNOW WHEN TO STOP</p><h2>Learning more. <em>Generalising less.</em></h2><p>Training loss keeps falling. Validation loss reaches its minimum at epoch 12.</p></div>
+  <div class="learning-layout"><div id="learning-chart" class="learning-chart"></div><aside class="epoch-details"><p class="small-label">INSPECT AN EPOCH</p><div class="epoch-number" id="epoch-number">12</div><input id="epoch-slider" type="range" min="1" max="17" value="12" aria-label="Inspect training epoch"><div id="epoch-metrics"></div><p class="micro">Epoch 12 restored.<br>Run stopped at epoch 17.</p></aside></div>
+  <p class="scene-foot">Selected CNN train–validation accuracy gap: 3.33 points. LR gap: 2.02 points. kNN self-neighbours make ordinary training accuracy optimistic.</p>
+</section>
+<section class="scene" data-title="Final results" data-time="60" aria-label="Final test performance">
+  <div class="scene-heading"><p class="eyebrow">09 / THE FINAL TEST</p><h2>The CNN leads. <em>By 6.75 points.</em></h2><p>10,000 official test images. Frozen models. No refitting or test-based tuning.</p></div>
+  <div class="results" id="results"></div>
+  <div class="results-bottom"><p><b>9,179</b> images correctly classified by the CNN.</p><p>Checkpoint hashes verified.<br>Saved validation predictions reproduced exactly.</p></div>
+  <p class="scene-foot">Shown: final test accuracy. Dashed marks: validation accuracy. Constant-class reference on this balanced test set: 10%.</p>
+</section>
+<section class="scene" data-title="Beyond overall accuracy" data-time="55" aria-label="Per-class recall and confusion matrix">
+  <div class="scene-heading"><p class="eyebrow">10 / WHAT THE HEADLINE HIDES</p><h2>Not every category <em>is equally easy.</em></h2><p>Recall = correct predictions among the actual members of a class.</p></div>
+  <div class="class-analysis"><div class="class-list" id="analysis-classes" aria-label="Choose a category"></div><div class="class-detail"><div class="class-detail-header"><h3 id="analysis-title">Shirt</h3><button id="matrix-toggle" aria-pressed="false">Show confusion matrix ↗</button></div><div id="recall-bars"></div><div class="matrix-wrap" id="matrix-wrap" hidden></div><p id="class-takeaway"></p></div></div>
+  <p class="scene-foot">Every test category has 1,000 images. The CNN is best overall; kNN has slightly higher ankle-boot recall.</p>
+</section>
+<section class="scene" data-title="The mistakes" data-time="80" aria-label="Shirt recall and asymmetric classification errors">
+  <div class="scene-heading"><p class="eyebrow">11 / LOOK AT THE FAILURES</p><h2 id="error-heading">Shirt recall: <em>67.6%.</em></h2><p id="error-subtitle">676 of 1,000 actual shirts correctly identified. Each arrow reads actual → predicted.</p></div>
+  <div class="error-view-controls" role="group" aria-label="Error analysis view"><button data-error-view="shirt" aria-pressed="true">Shirt confusions</button><button data-error-view="gallery" aria-pressed="false">Sampled error gallery ↗</button></div>
+  <div class="shirt-layout" id="shirt-view"><div class="shirt-pairs" id="shirt-pairs"></div><aside class="shirt-interpretation"><p class="small-label">OBSERVED</p><p>Balanced classes.<br>Lower shirt recall.<br>More errors from shirts into these classes than in reverse.</p><p class="small-label">PLAUSIBLE EXPLANATIONS</p><p>Overlapping silhouettes.<br>Limited detail at 28 × 28.<br>Potentially more variation within shirts.</p><p class="hypothesis-caveat">Causes not proven.<br>Within-class variation not measured.</p></aside></div>
+  <div class="errors-layout" id="sampled-error-view" hidden><div class="error-grid" id="error-grid"></div><aside class="error-aside"><div class="error-models" role="group" aria-label="Choose error examples"><button data-error-model="Logistic regression" aria-pressed="false">LR</button><button data-error-model="kNN" aria-pressed="false">kNN</button><button data-error-model="CNN" aria-pressed="true">CNN</button></div><p class="small-label">LARGEST CONFUSIONS</p><div id="confusion-list"></div><p>Similar silhouettes and low detail are plausible explanations.<br><br>They do not prove why an individual prediction failed.</p></aside></div>
+  <p class="scene-foot" id="error-foot">Equal class sizes do not imply equal difficulty. Errors need not be symmetric. Each direction starts with 1,000 actual images.</p>
+</section>
+<section class="scene" data-title="Limitations" data-time="50" aria-label="Limitations of the experiment">
+  <div class="scene-heading"><p class="eyebrow">12 / WHERE THE EVIDENCE STOPS</p><h2>A strong benchmark result.<br><em>A limited claim.</em></h2></div>
+  <div class="limits-list"><div><span>01</span><h3>Benchmark images</h3><p>Phone photographs, new lighting and backgrounds remain untested.</p></div><div><span>02</span><h3>One validation split</h3><p>Repeated choices can overfit development evidence. Three seeds do not replace cross-validation.</p></div><div><span>03</span><h3>Several factors changed</h3><p>Capacity and training also differ. This comparison does not isolate the effect of convolution alone.</p></div><div><span>04</span><h3>Frozen evaluation</h3><p>No exact development/test overlaps. No refit on all 60,000 development images.</p></div></div>
+</section>
+<section class="scene conclusion" data-title="The conclusion" data-time="35" aria-label="Conclusions">
+  <p class="eyebrow">13 / THE ANSWER</p><div class="conclusion-number">91.79<span>%</span></div><h2>The best model we tested.<br><em>Still learning the difference.</em></h2><div class="conclusion-bottom"><p>CNN test accuracy leads the baselines.<br>Shirt recall remains <b>67.6%</b>.</p><p>Choose using evidence.<br>Understand the errors.</p></div><button class="text-button" id="evidence-button">Explore the evidence & questions ↗</button>
+</section>
+</main>
+<footer class="navigation"><div class="chapter-info"><span id="scene-counter">01 / 14</span><span id="scene-title">The question</span></div><div class="nav-hint">← → navigate <span>·</span> N notes <span>·</span> F fullscreen</div><div class="nav-controls"><button id="previous" aria-label="Previous scene">←</button><button id="next" aria-label="Next scene">→</button></div><div id="progress" class="progress" role="progressbar" aria-label="Presentation progress" aria-valuemin="1" aria-valuemax="14" aria-valuenow="1"><span></span></div></footer>
+<dialog id="overview-dialog" aria-labelledby="overview-title"><button class="close-dialog" data-close aria-label="Close overview">×</button><p class="eyebrow">THE EXPERIMENT / TARGET 13 MINUTES 30 SECONDS</p><h2 id="overview-title">Choose a scene.</h2><div class="overview-grid" id="overview-grid"></div></dialog>
+<dialog id="notes-dialog" aria-labelledby="notes-title"><button class="close-dialog" data-close aria-label="Close notes">×</button><p class="eyebrow" id="notes-time"></p><h2 id="notes-title">Presenter notes</h2><div id="notes-content"></div><button class="text-button" id="notes-evidence">Sources & technical details ↗</button></dialog>
+<dialog id="evidence-dialog" aria-labelledby="evidence-title"><button class="close-dialog" data-close aria-label="Close evidence">×</button><p class="eyebrow">BACKUP / NOT PART OF THE TIMED TALK</p><h2 id="evidence-title">Evidence, not just effects.</h2><div id="evidence-content"></div></dialog>
+<dialog id="image-dialog" aria-labelledby="image-title"><button class="close-dialog" data-close aria-label="Close image">×</button><h2 id="image-title"></h2><img id="image-detail" alt=""><p id="image-description"></p></dialog>
+<div id="status" class="sr-only" role="status" aria-live="polite"></div>
+<script id="project-data" type="application/json">/* DATA */</script>
+<script>/* SCRIPT */</script>
+</body>
+</html>
