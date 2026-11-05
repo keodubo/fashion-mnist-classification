@@ -24,7 +24,8 @@ An interactive scientific exhibition about how three models classify the same cl
 
 1. Opening: direct research title beside an asymmetric, slowly drifting contact sheet of real observations. No oversized condensed type or highlighted-word formula.
 2. CNN: one large selected activation plate for each of the two pooled tensors, with a native selector exposing eight recorded channels and clearly labelled dimensions. A channel selector switches recorded evidence; it never implies live inference. Input and output remain visible. Native selectors prevent compact-screen overlap without reducing labels.
-3. Results: ivory canvas, a large CNN accuracy finding and a comparison chart with labelled test and validation scores. Never use an unlabeled truncated bar scale.
+3. Interpretation: original validation specimen, one selected sensitivity map and a measured occlusion experiment. A labelled sequential mineral scale indicates within-map magnitude. Signed patch readouts distinguish score drops from increases; the positive-only heatmap is explicitly labelled. No suggestion that maps are segmentation masks or causal explanations.
+4. Results: ivory canvas, a large CNN accuracy finding and a comparison chart with labelled test and validation scores. Never use an unlabeled truncated bar scale.
 
 ## Other scene families
 

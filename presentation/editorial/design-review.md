@@ -35,3 +35,19 @@ Three directions were considered: dark scientific exhibition, paper research jou
 The source data and outputs are unchanged. Results remain final test results; walkthroughs remain recorded validation outputs. The stratification explanation, distinction from five-fold cross-validation, publisher-provided test set, shirt recall, all six directional counts and evidence-versus-hypothesis caveats are retained.
 
 The presentation target remains 13 minutes 30 seconds. This is an authored pacing target, not a measured speaking time.
+
+## CNN interpretation extension (5 November 2026)
+
+- Added scene 8; 15 targets total 840 seconds (14 minutes). This is a target requiring an aloud rehearsal, not a measured duration.
+- Computed saliency and occlusion for the same ten validation examples, eleven targets, using the frozen checkpoint. Five numerical blackbox unit tests passed, base predictions matched, signed maps reconstructed from patch deltas, and checkpoint/state hashes stayed unchanged.
+- Independently reviewed the method, data boundaries, target selection, note mapping and script. No material findings.
+- Rendered the new scene at 1440×900, 1280×720, 768×1024 and 390×844; inspected both top and lower controls on portrait/mobile views. No horizontal overflow; vertical scrolling preserves all controls on portrait screens. Compact desktop layout keeps the specimens, patch controls and selector visible.
+- Checked switching saliency/occlusion, Shirt true/predicted targets, a negative patch delta, slider arrow-key behaviour, automatic playback and stop-on-navigation, reduced-motion one-step playback, all15 presenter-note titles/targets, fullscreen from slider focus, and Escape. No browser warnings or errors. Local HTML remains operable with network emulation offline.
+- Positive-only occlusion map display is explicitly labelled; signed readouts preserve score increases. Per-map normalisation and causal/segmentation caveats are visible and covered in the notes/script.
+- Script/PDF now covers15slides and59questions in27pages; compiled without layout warnings and rendered for inspection. Earlier exported versions and reported test results remain unchanged.
+
+## Automatic scanning refinement
+
+The occlusion patch now starts and loops automatically on scene entry and resumes after example/target changes, notes dismissal, page return and reduced-motion reset. Optional pause/position controls remain for inspection. The preprocessing scene scans pixels in row order automatically, updating raw intensity, normalisation and the matching marker in the flattened vector. Hover is unnecessary. Both scans pause off-screen, with dialogs open or while the page is hidden; reduced motion keeps automatic scanning static.
+
+Verified automatic frame advancement in both scenes, signed target changes without restarting manually, pause/resume around notes and navigation, exact displayed normalisation, reduced-motion static/one-step behaviour, and resuming when reduced motion is disabled. Browser console clean. Updated notes and inspected recompiled script pages5and10; total presentation target remains840seconds.

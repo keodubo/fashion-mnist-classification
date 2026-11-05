@@ -8,9 +8,10 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const top = probabilities => probabilities.map((p, i) => ({ p, i })).sort((a, b) => b.p - a.p || a.i - b.i);
   let current = -1, selectedDemo = 4, selectedClass = 6, errorModel = 'CNN', matrixOpen = false;
-  let leavingTimer;
+  let leavingTimer, pixelTimer = null, pixelFrame = 0;
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const interpretation = window.setupInterpretation(D.interpretation, D.classes, announce);
   const selectedChannels = { '2': 0, '5': 0 };
-  const noteMap = [0, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   const knownSources = [
     'notebooks/01-data-exploration.ipynb',
     'data/splits/train-validation-v1.json',
@@ -29,15 +30,19 @@
     'docs/final-evaluation-protocol.md',
     'scripts/final_evaluation.py',
     'presentation/editorial/evidence-manifest.json',
+    'presentation/editorial/interpretation.json',
+    'presentation/editorial/build_interpretation.py',
+    'W10/10-CNNs-block2.pdf — pages 56–60 (parent course folder)',
   ];
 
   function announce(message) { $('#status').textContent = message; }
   function closeAll() { $$('dialog[open]').forEach(d => d.close()); }
-  function openDialog(id) { closeAll(); $(id).showModal(); }
+  function openDialog(id) { closeAll(); $(id).showModal(); syncScans(); }
   function go(index, hash = true) {
     index = Math.max(0, Math.min(scenes.length - 1, index));
     if (index === current) return;
     clearTimeout(leavingTimer);
+    interpretation.setActive(false);
     const moveFocus = current >= 0 && scenes[current].contains(document.activeElement);
     if (moveFocus) document.activeElement.blur();
     scenes.forEach((scene, i) => {
@@ -48,6 +53,7 @@
       if (i === index) scene.scrollTop = 0;
     });
     current = index;
+    syncScans();
     if (moveFocus) {
       const heading = scenes[index].querySelector('h1,h2');
       heading.tabIndex = -1;
@@ -115,6 +121,22 @@
   });
   highlightBalance(6);
 
+  function syncScans() {
+    clearInterval(pixelTimer); pixelTimer = null;
+    const visible = !document.hidden && !$('dialog[open]');
+    interpretation.setActive(visible && current === 7);
+    if (current !== 2 || !visible) return;
+    drawPixels(pixelFrame);
+    if (reducedMotion.matches) return;
+    pixelTimer = setInterval(() => {
+      pixelFrame = (pixelFrame + 1) % 784;
+      drawPixels(pixelFrame);
+    }, 200);
+  }
+  reducedMotion.addEventListener('change', syncScans);
+  document.addEventListener('visibilitychange', syncScans);
+  $$('dialog').forEach(dialog => dialog.addEventListener('close', syncScans));
+
   function drawPixels(highlight = null) {
     const demo = D.demos[selectedDemo], canvas = $('#pixel-canvas'), ctx = canvas.getContext('2d');
     const cell = canvas.width / 28;
@@ -124,23 +146,30 @@
     ctx.strokeStyle = '#ffffff12'; ctx.lineWidth = .7;
     for (let i = 1; i < 28; i++) { ctx.beginPath(); ctx.moveTo(i * cell, 0); ctx.lineTo(i * cell, canvas.height); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i * cell); ctx.lineTo(canvas.width, i * cell); ctx.stroke(); }
     if (highlight !== null) {
+      const value = demo.pixels[highlight];
+      $('#pixel-raw').textContent = value;
+      $('#pixel-scaled').textContent = (value / 255).toFixed(3);
+      $('#pixel-readout').textContent = `Row ${Math.floor(highlight / 28) + 1}, column ${highlight % 28 + 1} · feature ${highlight + 1} of 784`;
       ctx.strokeStyle = '#c3ce9c'; ctx.lineWidth = 4;
       ctx.strokeRect((highlight % 28) * cell + 1, Math.floor(highlight / 28) * cell + 1, cell - 2, cell - 2);
     }
     const vctx = $('#vector-canvas').getContext('2d'), w = $('#vector-canvas').width, h = $('#vector-canvas').height;
     vctx.clearRect(0, 0, w, h); vctx.strokeStyle = '#c3ce9c'; vctx.lineWidth = 1;
     vctx.beginPath(); demo.pixels.forEach((v, i) => { const x = i / 783 * w, y = h - 5 - v / 255 * (h - 10); if (i === 0) vctx.moveTo(x, y); else vctx.lineTo(x, y); }); vctx.stroke();
+    if (highlight !== null) {
+      const x = highlight / 783 * w, y = h - 5 - demo.pixels[highlight] / 255 * (h - 10);
+      vctx.strokeStyle = '#eeeae1'; vctx.lineWidth = 2;
+      vctx.beginPath(); vctx.moveTo(x, 0); vctx.lineTo(x, h); vctx.stroke();
+      vctx.fillStyle = '#eeeae1'; vctx.beginPath(); vctx.arc(x, y, 4, 0, Math.PI * 2); vctx.fill();
+    }
   }
   $('#pixel-canvas').addEventListener('pointermove', e => {
+    if (!reducedMotion.matches) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.max(0, Math.min(27, Math.floor((e.clientX - rect.left) / rect.width * 28)));
     const y = Math.max(0, Math.min(27, Math.floor((e.clientY - rect.top) / rect.height * 28)));
-    const i = y * 28 + x, value = D.demos[selectedDemo].pixels[i];
-    $('#pixel-raw').textContent = value; $('#pixel-scaled').textContent = (value / 255).toFixed(3);
-    $('#pixel-readout').textContent = `Row ${y + 1}, column ${x + 1} · feature ${i + 1} of 784`;
-    drawPixels(i);
+    pixelFrame = y * 28 + x; drawPixels(pixelFrame);
   });
-  $('#pixel-canvas').addEventListener('pointerleave', () => drawPixels());
   $('#representation-button').addEventListener('click', e => {
     const flat = e.currentTarget.getAttribute('aria-pressed') !== 'true';
     e.currentTarget.setAttribute('aria-pressed', String(flat));
@@ -188,7 +217,8 @@
       plate.addEventListener('click', () => inspectImage(img.src, `Convolution ${layer === '2' ? 1 : 2} · channel ${selectedChannels[layer] + 1}`, `Recorded activation after ReLU and max pooling for validation image #${d.id}. ${layer === '2' ? '14 × 14' : '7 × 7'} values. Common intensity scale across the original tensor; not original pixel intensity.`));
       grid.append(chooser); selectChannel(selectedChannels[layer]);
     });
-    drawPixels();
+    pixelFrame = 0; drawPixels(pixelFrame);
+    interpretation.render(d);
   }
   $$('[data-demo-selector]').forEach(group => D.classes.forEach((name, i) => {
     const b = document.createElement('button'); b.dataset.demo = i; b.textContent = name;
@@ -311,7 +341,7 @@
   }));
 
   function showNotes() {
-    const s = scenes[current], original = D.notes[noteMap[current]];
+    const s = scenes[current], original = D.notes[current];
     $('#notes-title').textContent = s.dataset.title;
     $('#notes-time').textContent = `SCENE ${current + 1} / TARGET ${s.dataset.time} SECONDS`;
     let text = D.scene_notes?.[String(current)] || original.notes;
@@ -320,6 +350,11 @@
     openDialog('#notes-dialog');
   }
   const qa = [
+    ['What is gradient saliency?', 'The magnitude of the derivative of a selected raw class logit with respect to normalised input pixels. It describes local sensitivity, can be noisy, and is not a probability or proof of causal importance.'],
+    ['How was occlusion computed?', 'Cover 5×5 patches with intensity 0.5 at stride 2, including the final edge position: 169 patches. Subtract each occluded target logit from its original logit. The map averages signed changes over patches covering each pixel, then highlights positive averages only. Negative changes remain visible in the patch readout. Results depend on patch size and baseline; masked inputs may be unrealistic.'],
+    ['Why can the Shirt map differ from the Coat map?', 'An explanation is specific to an input and target class. Validation Shirt #32 was predicted Coat. Switching targets changes the score being explained, without changing the image or model. This does not prove why shirts are generally difficult.'],
+    ['Are the new maps running inference in the browser?', 'No. They are recorded diagnostics on the ten existing deterministic validation examples. Input gradients and occlusion forward passes were computed offline from the frozen CNN in evaluation mode. No weights were updated, no test images were used, and no model was retuned.'],
+    ['Can map brightness be compared across images?', 'No. Every map is normalised independently for visibility. Brighter means a larger value within that particular map; gradient and occlusion also measure different quantities.'],
     ['Did you stratify? Did you cross-validate?', 'Yes. StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) and next(splitter.split(...)) produce the first yielded split. Fold 0 is validation; the other four folds are training. We used that one saved 80/20 split for every model, not five-fold cross-validation. All ten classes are exactly 10% of every actual subset. The official test set was supplied by Fashion-MNIST; we checked its balance.'],
     ['How do stratification and grouping differ?', 'Stratification preserves class proportions. Grouping uses hashes of original pixels so exact duplicate images stay together. No exact duplicate groups were found in the development pool. Grouping was a precaution, not duplicate removal; exact balance is verified for this saved split, not guaranteed for every possible grouped dataset.'],
     ['Why keep validation and test separate?', 'Validation chooses k, C, configurations and checkpoints. Test data assess the frozen choices. Do not tune replacement models using the now-observed test scores.'],
@@ -343,7 +378,7 @@
   ];
   const summaryTable = `<table><thead><tr><th>Model</th><th>Validation</th><th>Test</th><th>Test macro-F1</th></tr></thead><tbody>${modelNames.map(name => { const t = D.metrics.find(r => r.model === name && r.split === 'Test'), v = D.metrics.find(r => r.model === name && r.split === 'Validation'); return `<tr><td>${name}</td><td>${fmt(v.accuracy)}</td><td>${fmt(t.accuracy)}</td><td>${t['macro_f1-score'].toFixed(4)}</td></tr>`; }).join('')}</tbody></table>`;
   const perClassTable = `<table><thead><tr><th>Class</th>${modelNames.map(n => `<th>${n}<br>Val / Test recall</th>`).join('')}</tr></thead><tbody>${D.classes.map((name, i) => `<tr><td>${name}</td>${modelNames.map(n => { const v = D.per_class.find(r => r.model === n && r.split === 'Validation' && r.class_id === i), t = D.per_class.find(r => r.model === n && r.split === 'Test' && r.class_id === i); return `<td>${fmt(v.recall, 1)} / ${fmt(t.recall, 1)}</td>`; }).join('')}</tr>`).join('')}</tbody></table>`;
-  $('#evidence-content').innerHTML = `<h3>Results</h3>${summaryTable}<h3>Per-class validation and test recall</h3><div style="overflow:auto">${perClassTable}</div><h3>Exact selected CNN</h3><p>Conv(1→32, 3×3, padding 1) → ReLU → MaxPool(2) → Conv(32→64, 3×3, padding 1) → ReLU → MaxPool(2) → Flatten → Dense(3,136→128) → ReLU → Dropout(0.25) → Dense(128→10). 421,642 trainable parameters.</p><p>Adam, learning rate 0.001, batch size 128, max 30 epochs. ReduceLROnPlateau halves the rate after 2 stagnant validation-loss epochs; threshold 0, minimum rate 0.00001. Early-stopping patience 5. Original seed 42, lowest-loss checkpoint at epoch 12. No weight decay in the selected model.</p><h3>Integrity and provenance</h3><p>All three model hashes matched the frozen protocol. CPU validation predictions reproduced the saved outputs exactly before test scoring. Publisher checksums and IDX dimensions were verified. Exact development/test overlap: zero. Every test category has 1,000 observations.</p><p>${esc(D.provenance.examples)}. ${esc(D.provenance.features)}. ${esc(D.provenance.test)}.</p><h3>Dataset and project evidence</h3><p><a href="https://github.com/zalandoresearch/fashion-mnist/tree/b2617bb6d3ffa2e429640350f613e3291e10b141" target="_blank" rel="noopener">Fashion-MNIST / Zalando Research</a></p><p>Project-relative source paths:</p><ul>${knownSources.map(s => `<li><code>${esc(s)}</code></li>`).join('')}</ul><h3>Frozen checkpoint fingerprints</h3>${Object.entries(D.model_hashes).map(([name, hash]) => `<p>${name}<br><code>${hash}</code></p>`).join('')}<h3>Practise the questions</h3>${qa.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}<h3>Ask Álvaro</h3><p>Does the balance of methods and findings match the assignment? Is the checkpoint-selection rule clear? Is the error analysis deep enough? Which details should move into or out of the main talk?</p>`;
+  $('#evidence-content').innerHTML = `<h3>Results</h3>${summaryTable}<h3>Per-class validation and test recall</h3><div style="overflow:auto">${perClassTable}</div><h3>Exact selected CNN</h3><p>Conv(1→32, 3×3, padding 1) → ReLU → MaxPool(2) → Conv(32→64, 3×3, padding 1) → ReLU → MaxPool(2) → Flatten → Dense(3,136→128) → ReLU → Dropout(0.25) → Dense(128→10). 421,642 trainable parameters.</p><p>Adam, learning rate 0.001, batch size 128, max 30 epochs. ReduceLROnPlateau halves the rate after 2 stagnant validation-loss epochs; threshold 0, minimum rate 0.00001. Early-stopping patience 5. Original seed 42, lowest-loss checkpoint at epoch 12. No weight decay in the selected model.</p><h3>Class-specific CNN interpretation</h3><p>W10, pages 56–60: gradient saliency and occlusion are complementary diagnostics. We explain raw logits using absolute input gradients and mean occlusion score changes. The heatmap highlights positive drops only; the patch readout preserves negative changes. Patch size 5×5, stride 2 with edge inclusion, fill 0.5, 169 positions. Maps use independent normalisation and cannot establish causality or segmentation. Frozen-model diagnostics use validation examples only.</p><h3>Integrity and provenance</h3><p>All three model hashes matched the frozen protocol. CPU validation predictions reproduced the saved outputs exactly before test scoring. Publisher checksums and IDX dimensions were verified. Exact development/test overlap: zero. Every test category has 1,000 observations.</p><p>${esc(D.provenance.examples)}. ${esc(D.provenance.features)}. ${esc(D.provenance.test)}.</p><h3>Dataset and project evidence</h3><p><a href="https://github.com/zalandoresearch/fashion-mnist/tree/b2617bb6d3ffa2e429640350f613e3291e10b141" target="_blank" rel="noopener">Fashion-MNIST / Zalando Research</a></p><p>Project-relative source paths:</p><ul>${knownSources.map(s => `<li><code>${esc(s)}</code></li>`).join('')}</ul><h3>Frozen checkpoint fingerprints</h3>${Object.entries(D.model_hashes).map(([name, hash]) => `<p>${name}<br><code>${hash}</code></p>`).join('')}<h3>Practise the questions</h3>${qa.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}<h3>Ask Álvaro</h3><p>Does the balance of methods and findings match the assignment? Is the checkpoint-selection rule clear? Is the error analysis deep enough? Which details should move into or out of the main talk?</p>`;
 
   scenes.forEach((s, i) => {
     const b = document.createElement('button');
@@ -401,7 +436,7 @@
   });
   let touch = null;
   $('#deck').addEventListener('touchstart', e => {
-    if (e.target.closest('button,input,a,canvas,[role=button]')) return;
+    if (e.target.closest('button,input,select,label,a,canvas,[role=button]')) return;
     touch = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
   }, { passive: true });
   $('#deck').addEventListener('touchend', e => {

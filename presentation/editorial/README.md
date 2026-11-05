@@ -27,9 +27,9 @@ Input controls keep their normal keyboard behaviour. For example, arrows on the 
 
 ## Timing and evidence
 
-Fourteen scenes retain their existing target times, totalling 810 seconds, or 13 minutes 30 seconds. Rehearse aloud to allow for interaction within the 12–15 minute limit. Supporting dialogs are outside the timed narrative.
+Fifteen scenes target 840 seconds, or 14 minutes. The new interpretation scene is number 8, immediately after the CNN walkthrough; the opening, split, CNN walkthrough, tuning and error sections have shorter targets to make room. Rehearse aloud to allow for interaction within the 12–15 minute limit. Supporting dialogs are outside the timed narrative.
 
-The embedded `data.json` is unchanged from the verified prior presentation: real observations, recorded model walkthroughs, exact class counts, the saved final results and genuine directional error examples. No model training, inference or test-based tuning was performed for this redesign. Activations are recorded outputs; the scan is illustrative. The feature-map intensity scale is shared within each original layer tensor, not across layers.
+The original metrics and examples in `data.json` remain unchanged: real observations, recorded model walkthroughs, exact class counts, the saved final results and genuine directional error examples. The new interpretation exporter performs validation-only forward and input-gradient passes through the frozen CNN. No training, test inference, test-based tuning or change to reported results was performed. Activations are recorded outputs; the scan is illustrative. The feature-map intensity scale is shared within each original layer tensor, not across layers.
 
 ## Rebuild
 
@@ -43,4 +43,24 @@ Edit `template.html`, `styles.css` or `app.js`, then run the packer. Existing au
 
 ## Review
 
-The presentation was rendered at 1440×900, 1280×720, 768×1024 and 390×844. The review covered all fourteen scenes, representative individual screenshots, offline operation, keyboard/dialog/fullscreen behaviour, example propagation, channel selection, range controls, mobile statistics and reduced motion. See [review record](design-review.md).
+The original fourteen-scene presentation was rendered at 1440×900, 1280×720, 768×1024 and 390×844. That review covered all fourteen original scenes, representative individual screenshots, offline operation, keyboard/dialog/fullscreen behaviour, example propagation, channel selection, range controls, mobile statistics and reduced motion. See [review record](design-review.md).
+
+## CNN interpretation (scene 8)
+
+Choose Gradient saliency or Occlusion map; use the class selector to compare the predicted Coat logit and true Shirt logit for validation Shirt #32. All ten existing deterministic validation examples remain available. The moving patch uses stored scores; the HTML is offline and does not execute a model. Its slider supports keyboard/touch use. The patch scan starts and loops automatically on entry and continues after example or target changes; it pauses off-screen, while a dialog is open, or when the page is hidden. Returning resumes it automatically. Optional pause and position controls remain available. Reduced motion advances one patch per button click. The preprocessing slide also scans its pixels automatically, updating intensity, normalisation and the corresponding flattened-vector marker; reduced motion retains optional pointer inspection.
+
+`interpretation.json` contains absolute input gradients of raw class logits, and signed occlusion changes for 169 full 5×5 patches (stride 2, final edge included; grey fill 0.5). The per-pixel occlusion map averages all signed changes from covering patches, then the display highlights positive means only. The patch readout retains negative changes. Each map has its own intensity scale; do not compare brightness across maps or infer causality/segmentation. Masking choices can affect the result or create unrealistic inputs. W10 CNN lecture pages 56–60 are the course reference.
+
+To regenerate explanation data with the original local checkpoint and saved split:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -p 'test_interpretation.py'
+.venv/bin/python presentation/editorial/build_interpretation.py
+.venv/bin/python presentation/editorial/pack.py
+```
+
+The exporter checks the frozen checkpoint fingerprint, deterministic validation membership, base probabilities and unchanged model state. A fresh clone needs the original local model/data artifacts to regenerate the maps; the already-bundled HTML and recorded JSON do not need them. No new dependencies were added.
+
+The updated [rehearsal script](../output/presentation-script.pdf) and [LaTeX source](../output/presentation-script.tex) cover all 15 scenes and 59 questions. The 14-minute route is a speaking target, not a measured rehearsal.
+
+Both automatic scans advance every 200 milliseconds (five positions per second), slowing the displayed values enough to follow during narration. They do not need to complete a full cycle during the timed slide.

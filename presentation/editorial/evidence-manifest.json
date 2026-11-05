@@ -1,5 +1,5 @@
 {
-  "operation": "Saved-evidence extension only; no training, inference or tuning",
+  "operation": "Saved final results and deterministic validation walkthroughs, extended with frozen-CNN validation-only interpretation; no training, test inference or tuning.",
   "split_details": {
     "subsets": [
       {
@@ -136,5 +136,43 @@
     "results/final-evaluation-v1/cnn-confusion-counts.csv": "278c43288f3fea758b25cf3ed34e5fc0e18d37178fa375b5960ce5f53d449591",
     "results/final-evaluation-v1/predictions.csv": "010bb6175edc32b9d1789f53e46e126c55c17bb7ad5aef24cdef185cdc90b8e9",
     "results/final-evaluation-v1/class-counts.csv": "9bafac6cfde74b2bd5c5fa22744d3aee9d296010bb9ae9ccb32a69d038aadf84"
+  },
+  "interpretation": {
+    "source": "presentation/editorial/interpretation.json",
+    "exporter": "presentation/editorial/build_interpretation.py",
+    "sha256": "6bc9646974ac558d717c2e9f0c4df07df83682f0eabf4f3672cb0c8a8f22b945",
+    "checkpoint_sha256": "1a389bf05cfe4c5eacd30ec30bc04302bfc7b74de32cd5d1b6e9570841388c01",
+    "example_count": 10,
+    "target_count": 11,
+    "patch_count": 169,
+    "methods": {
+      "score": "raw class logit",
+      "gradient": "absolute input derivative",
+      "patch_size": 5,
+      "stride": 2,
+      "fill": 0.5,
+      "aggregation": "mean signed score drop over covering patches",
+      "display": "positive map values normalised independently to their maximum; signed patch deltas retained",
+      "target_policy": "predicted class, plus actual class when different; fixed within an explanation",
+      "occlusion_edge_policy": "include final full patch position to cover every pixel",
+      "caveat": "local model diagnostics, not causal evidence; patch fill can create out-of-distribution inputs"
+    },
+    "provenance": {
+      "checkpoint": "results/cnn-improvements/selected-model.pt",
+      "input_split": "validation only; first saved validation source index per class",
+      "training_images_sha256": "3aede38d61863908ad78613f6a32ed271626dd12800ba2636569512369268a84",
+      "training_labels_sha256": "a04f17134ac03560a47e3764e11b92fc97de4d1bfaf8ba1a3aa29af54cc90845",
+      "split_sha256": "e3942a2e625003307207e88c93a7c8b81bbcb7db54f0f1dfe79382352fc1e729",
+      "model_state_sha256_before": "f37e8654bdb412c518aafb8d744f12416a32ad9dcfa96f267cc6b0370cc20154",
+      "model_state_sha256_after": "f37e8654bdb412c518aafb8d744f12416a32ad9dcfa96f267cc6b0370cc20154",
+      "script_sha256": "b46f1887239bd4f948046cc6e712a06a82bf0c2b89bf9bbab352b9675efeb9a9",
+      "torch_version": "2.14.1",
+      "numpy_version": "2.5.4",
+      "device": "cpu",
+      "computational_threads": 4,
+      "test_data_loaded": false,
+      "training_performed": false,
+      "reference": "W10/10-CNNs-block2.pdf, pages 57-60"
+    }
   }
 }

@@ -44,7 +44,7 @@
 \vspace{12mm}
 {\Large Presentation script\\and defence guide}\par
 \vspace{12mm}
-Prepared for the feedback rehearsal with Professor \'Alvaro Rubio Garc\'ia. The spoken route follows the current fourteen-scene HTML presentation; the explanations and question bank are supporting material.
+Prepared for the feedback rehearsal with Professor \'Alvaro Rubio Garc\'ia. The spoken route follows the current fifteen-scene HTML presentation; the explanations and question bank are supporting material.
 \vspace{7mm}
 \textbf{The story}\par
 The same clothing images can be classified using nearby examples, weighted pixels or learned spatial patterns. A controlled comparison shows which approach performs best, while its errors show what the overall score hides.
@@ -54,7 +54,7 @@ The same clothing images can be classified using nearby examples, weighted pixel
 \item Read the ``Say aloud'' passage with the corresponding scene open.
 \item Close the guide and explain the same idea in your own words.
 \item Answer the check question before advancing. Use the final question bank to rehearse follow-ups.
-\item Time one uninterrupted run. The planned route is \textbf{13 minutes 30 seconds}; this is a target, not a measured delivery time. Do not read the technical notes aloud.
+\item Time one uninterrupted run. The planned route is \textbf{14 minutes}; this is a target, not a measured delivery time. Do not read the technical notes aloud.
 \end{enumerate}
 \vfill
 \textbf{Evidence rule}\par
@@ -64,20 +64,21 @@ Results below come from saved project outputs. No retraining, new test-based sel
 \begin{tabularx}{\linewidth}{rXrr}
 \toprule
  & Scene & Time & Finish\\\midrule
-1 & How models see clothing & 0:50 & 0:50\\
-2 & Fashion-MNIST & 0:30 & 1:20\\
-3 & From an image to 784 numbers & 0:40 & 2:00\\
-4 & Keeping the comparison fair & 1:05 & 3:05\\
-5 & kNN: the nearest examples & 1:05 & 4:10\\
-6 & Logistic regression: weighted pixels & 1:05 & 5:15\\
-7 & Inside the CNN & 1:35 & 6:50\\
-8 & Choosing the settings & 1:05 & 7:55\\
-9 & When training stops helping & 0:55 & 8:50\\
-10 & Final test performance & 1:00 & 9:50\\
-11 & Accuracy varies by category & 0:55 & 10:45\\
-12 & Shirt recall and directional errors & 1:20 & 12:05\\
-13 & What the experiment cannot establish & 0:50 & 12:55\\
-14 & The CNN performed best overall & 0:35 & 13:30\\\bottomrule
+1 & How models see clothing & 0:45 & 0:45\\
+2 & Fashion-MNIST & 0:30 & 1:15\\
+3 & From an image to 784 numbers & 0:40 & 1:55\\
+4 & Keeping the comparison fair & 1:00 & 2:55\\
+5 & kNN: the nearest examples & 1:05 & 4:00\\
+6 & Logistic regression: weighted pixels & 1:05 & 5:05\\
+7 & Inside the CNN & 1:25 & 6:30\\
+8 & Which pixels matter? & 1:00 & 7:30\\
+9 & Choosing the settings & 1:00 & 8:30\\
+10 & When training stops helping & 0:55 & 9:25\\
+11 & Final test performance & 1:00 & 10:25\\
+12 & Accuracy varies by category & 0:55 & 11:20\\
+13 & Shirt recall and directional errors & 1:15 & 12:35\\
+14 & What the experiment cannot establish & 0:50 & 13:25\\
+15 & The CNN performed best overall & 0:35 & 14:00\\\bottomrule
 \end{tabularx}
 \subsection{Keep the professor's priorities visible}
 Explain your actual choices and results. Avoid giving three textbook lectures about the models. The relevant questions are: what information did each model receive, which settings were selected and why, how was leakage avoided, and what do the errors tell us?
@@ -85,18 +86,18 @@ Explain your actual choices and results. Avoid giving three textbook lectures ab
 \begin{itemize}
 \item Open the self-contained HTML in a browser and check fullscreen there.
 \item Start with the default validation example, Coat \#22, so the walkthroughs tell one connected story.
-\item Know how to change examples, select CNN channels, switch tuning tabs and show the confusion matrix. These are optional demonstrations, not invitations to explore indefinitely.
+\item Know how to change examples, select CNN channels, change interpretation targets, watch the automatic occlusion scan, switch tuning tabs and show the confusion matrix. These are optional demonstrations, not invitations to explore indefinitely.
 \item On the learning-curve scene, point to epoch 12, the retained checkpoint.
 \item Keep the question bank available separately. Do not project it during the timed story.
 \end{itemize}
 \subsection{If you run long}
-Keep the split, model choices, final results and shirt analysis. Shorten optional interactions, exact parameter arithmetic and seed details. Reserve detailed answers for discussion.
+Keep the split, model choices, final results and shirt analysis. Keep the interpretation slide to its one-minute comparison. Shorten optional interactions, exact parameter arithmetic and seed details. Reserve detailed answers for discussion.
 
-\slide{1}{How models see clothing}{50 seconds}
+\slide{1}{How models see clothing}{45 seconds}
 \say
-``Recognising an item of clothing looks simple to us, but a model receives pixel values rather than a description. My project asks how three different approaches classify the same images: k-nearest neighbours, logistic regression and a convolutional neural network.
+``Recognising an item of clothing looks simple to us, but a model receives pixel values rather than a description. My project compares three approaches to classifying these images: k-nearest neighbours, logistic regression and a convolutional neural network.
 
-The aim is to compare their performance under the same data split and understand their mistakes. The story moves from preparing the images, to selecting the models, to checking whether a strong overall score also means reliable predictions for every category.''
+The aim is to compare their performance under the same data split and understand their mistakes. I will explain the preparation and model choices, then check whether a strong overall score hides difficult categories.''
 \understand
 \begin{itemize}
 \item \textbf{Input $X$:} a grayscale clothing image. \textbf{Target $y$:} one of ten known categories.
@@ -140,11 +141,11 @@ All models therefore use the same image information, but represent its structure
 \item Uniform scaling alone does not change Euclidean neighbour rankings. It standardises the numerical representation and supports optimisation for the trained models.
 \end{itemize}
 \screen
-Use the image-to-grid animation, then the flat vector. Explain what changes in representation rather than describing every animation step.
+The pixel scan starts automatically, updating intensity, normalisation and its position in the flat vector. Point to the moving highlight; no hovering is needed. Explain the representation rather than narrating every pixel.
 \selfcheck{Does flattening delete pixels? What spatial structure does a CNN explicitly exploit?}
 \transition{``Before training, the data must be divided fairly.''}
 
-\slide{4}{Keeping the comparison fair}{65 seconds}
+\slide{4}{Keeping the comparison fair}{60 seconds}
 \say
 ``From the 60,000 development images, we saved one fixed split: 48,000 for training and 12,000 for validation. Each class has 4,800 training and 1,200 validation images. The official test set has 1,000 per class. Every class is ten percent of every subset.
 
@@ -209,15 +210,15 @@ Show the input, contribution map and probability ranking. If asked, the displaye
 \selfcheck{What does changing $C$ do, and why does this remain a classification model despite its name?}
 \transition{``The CNN instead learns local patterns while preserving the image grid.''}
 
-\slide{7}{Inside the CNN}{95 seconds}
+\slide{7}{Inside the CNN}{85 seconds}
 \say
 ``The selected CNN contains two convolutional blocks. The first learns 32 feature maps and the second 64, using three-by-three kernels. Each block applies ReLU and two-by-two max pooling. Pooling reduces the spatial dimensions from 28 to 14 and then to seven.
 
 We flatten the resulting features, pass them through a 128-unit dense layer with ReLU, apply dropout of 25 percent during training, and produce ten class scores. These feature maps are recorded outputs from the actual model for the selected image.
 
-For this coat, the CNN correctly predicts coat with about 96.3 percent softmax probability. This one example illustrates the processing; the full test set is what establishes the overall result. The CNN is not always right.
+For this coat, the CNN correctly predicts coat with about 96.3 percent softmax probability. This illustrates the processing; the full test set establishes overall performance.
 
-ReLU introduces nonlinearity, pooling summarises local responses, and dropout helps control reliance on individual hidden units. We chose this compact architecture for small grayscale images and compared wider and regularised variants using validation results.''
+ReLU introduces nonlinearity, pooling summarises local responses, and dropout helps control overfitting. We compared wider and regularised variants on validation data.''
 \understand
 \[
 1\!\times\!28\!\times\!28\ \longrightarrow\ 32\!\times\!14\!\times\!14\
@@ -233,15 +234,37 @@ ReLU introduces nonlinearity, pooling summarises local responses, and dropout he
 \screen
 Follow input, first block, second block and class output. Show one channel change at most. Do not assign an unverified semantic meaning to each map.
 \selfcheck{Why are ReLU and softmax used in different places, and how many convolutional layers are there?}
-\transition{``Those settings were chosen using validation evidence.''}
+\transition{``We can also ask which input pixels affect a chosen class score.''}
 
-\slide{8}{Choosing the settings}{65 seconds}
+\slide{8}{Which pixels matter?}{60 seconds}
+\say
+``The feature maps showed activity inside the CNN. These two methods instead examine how the input affects a chosen class score.
+
+Gradient saliency highlights pixels where a small change would most affect that score. Occlusion covers a five-by-five patch with gray and records the score change as the patch moves. Brighter occlusion regions show larger positive score drops.
+
+The target class stays fixed during each scan. For this coat, we explain the Coat score. For the validation shirt predicted as Coat, we can switch between Coat and Shirt and ask different questions about the same image.
+
+These are recorded computations from the frozen model, not retraining. The maps can disagree and do not prove why shirts are generally difficult.''
+\understand
+\begin{itemize}
+\item \textbf{Gradient:} $S_{ij}=\left|\partial z_c/\partial x_{ij}\right|$, the magnitude of sensitivity of raw class logit $z_c$ to normalised input pixels. It is not a probability or a segmentation mask.
+\item \textbf{Occlusion:} $\Delta z_c=z_c(x)-z_c(x_{\mathrm{covered}})$. Positive means covering the patch reduced the fixed target score; negative means it increased. The pixel map averages signed drops across covering patches, then displays positive values only. The patch readout retains the sign.
+\item Patches are $5\times5$, stride 2, fill 0.5 on $[0,1]$; the final edge position is included. These are diagnostic choices, not validated optimal settings. Gray patches may create unnatural inputs.
+\item Each map is normalised independently for display: equally bright regions across different images or methods do not imply equal numerical sensitivity. Absolute gradients also omit direction.
+\item Validation Coat \#22 is the default; Shirt \#32 was already among the ten fixed examples. Do not select new examples because their maps look convincing.
+\end{itemize}
+\screen
+Keep Coat selected, compare the maps and let the patch scan play automatically. It starts on entry and pauses when leaving or opening notes. If time permits, select Shirt and switch the target from predicted Coat to actual Shirt. Reserve extended exploration for questions.
+\selfcheck{What does a positive occlusion score drop mean, and why must the target class stay fixed?}
+\transition{``Interpretation explains a fixed model; validation evidence explains why we chose its settings.''}
+
+\slide{9}{Choosing the settings}{60 seconds}
 \say
 ``We selected settings using the same validation split for every model. For kNN, three neighbours gave the highest accuracy of the values tested. For logistic regression, C equal to 0.1 performed best.
 
 For the CNN, we compared a baseline, a longer-training version, a wider version, and that wider version with weight decay. The wider network reached 92.33 percent validation accuracy and was retained. Within each run, the checkpoint was chosen by minimum validation loss; configurations were compared by accuracy at those restored checkpoints.
 
-Additional seed runs showed that the two wider configurations were close. Weight decay was more stable and had better average shirt recall, so the evidence does not establish one configuration as universally superior. We retained the declared original seed-42 wider model for final evaluation.''
+Additional seed runs put the two wider configurations close. Weight decay was more stable and had better mean shirt recall, so there is no universal winner. We retained the original seed-42 wider model for final evaluation.''
 \understand
 \begin{tabularx}{\linewidth}{Xr}
 \toprule CNN configuration & Validation accuracy\\\midrule
@@ -260,7 +283,7 @@ Briefly switch the comparison tabs. Do not read every table cell or every seed s
 \selfcheck{Why can the best validation-loss checkpoint differ from the epoch with the best accuracy?}
 \transition{``The learning curves explain why the final epoch was not automatically the best.''}
 
-\slide{9}{When training stops helping}{55 seconds}
+\slide{10}{When training stops helping}{55 seconds}
 \say
 ``Training loss keeps falling, but validation loss reaches its minimum at epoch 12. After that, fitting the training set more closely does not improve validation loss. That divergence is evidence of overfitting.
 
@@ -280,7 +303,7 @@ Point to the validation-loss minimum and move the epoch control only enough to s
 \selfcheck{Why restore epoch 12 instead of using the weights from epoch 17?}
 \transition{``Once the models were fixed, we evaluated the official test set.''}
 
-\slide{10}{Final test performance}{60 seconds}
+\slide{11}{Final test performance}{60 seconds}
 \say
 ``With the model choices frozen, logistic regression correctly classified 84.33 percent of the 10,000 test images, kNN 85.04 percent, and the CNN 91.79 percent. The CNN leads kNN by 6.75 percentage points.
 
@@ -306,7 +329,7 @@ Pause on the results. Say the three test accuracies once, then explain the pract
 \selfcheck{What can the test result establish, and why should it not be used for another tuning round?}
 \transition{``But one overall score can hide a difficult category.''}
 
-\slide{11}{Accuracy varies by category}{55 seconds}
+\slide{12}{Accuracy varies by category}{55 seconds}
 \say
 ``Overall accuracy averages across categories. To see what it hides, we examine recall: among the actual images of a class, how many were correctly identified?
 
@@ -329,7 +352,7 @@ Select Shirt, briefly compare with Bag, then show the matrix and identify one di
 \selfcheck{What is the difference between ``67.6\% of actual shirts were found'' and ``67.6\% of predicted shirts were correct''?}
 \transition{``The shirt errors have a clear directional pattern.''}
 
-\slide{12}{Shirt recall and directional errors}{80 seconds}
+\slide{13}{Shirt recall and directional errors}{75 seconds}
 \say
 ``The CNN correctly identified 676 of the 1,000 actual shirts: shirt recall is 67.6 percent. The remaining 324 were assigned to other categories.
 
@@ -356,7 +379,7 @@ Point to one image pair and read its two directions. State the remaining pairs b
 \selfcheck{How can the classes be balanced while shirt errors are both more frequent and asymmetric?}
 \transition{``Those findings are useful, provided we stay within the experiment's limits.''}
 
-\slide{13}{What the experiment cannot establish}{50 seconds}
+\slide{14}{What the experiment cannot establish}{50 seconds}
 \say
 ``There are four main limits. First, these are small benchmark images, so performance on ordinary photographs remains untested. Second, we used one validation split; repeated choices can adapt to that split, and three random seeds do not replace cross-validation.
 
@@ -375,7 +398,7 @@ Use the four visible limitations as the structure. Avoid adding a long list of s
 \selfcheck{Why do three seeds not replace multiple validation splits?}
 \transition{``Within those limits, the main conclusion is clear.''}
 
-\slide{14}{The CNN performed best overall}{35 seconds}
+\slide{15}{The CNN performed best overall}{35 seconds}
 \say
 ``On the fixed Fashion-MNIST test set, the selected CNN performed best overall, reaching 91.79 percent accuracy. The comparison supports learning image features for this task, while the shirt analysis shows why overall accuracy is not enough: shirt recall remains 67.6 percent.
 
@@ -419,6 +442,30 @@ F1_c=\frac{2P_cR_c}{P_c+R_c},\quad
 \]
 For CNN Shirt: $TP=676$, $FN=324$, $FP=141$, $TN=8,859$. Recall is $676/1000=67.6\%$; precision is $676/817\approx82.74\%$; F1 is about 0.7441. One-versus-rest accuracy is 95.35\%, inflated by the many non-shirts; it does not mean shirts are reliably recognised.
 
+\clearpage\section{Interpretation: technical reference}
+\subsection{A class-specific question}
+The target is a \emph{raw class logit} $z_c$, before softmax. A score drop of 0.5 means half a logit unit, not 50\% or a probability change. A class must stay fixed while comparing patch positions; switching to each occluded image's winning class would mix different questions.
+
+By default, explain the model's predicted class on the original image. For the misclassified validation Shirt \#32, choosing Coat asks what affects the wrong predicted score; choosing Shirt asks what affects the true-class score. Neither asks a counterfactual question about changing the real garment.
+\subsection{Gradient saliency}
+\[
+S_{ij}=\left|\frac{\partial z_c(x)}{\partial x_{ij}}\right|.
+\]
+Input pixels are in $[0,1]$. One backward differentiation computes local sensitivities at this image. Taking the absolute value removes the direction of change. Large gradients can occur where the image is dark; this is not simply an outline of the garment and not a guarantee that a large finite change will have the predicted effect.
+
+The model stays in evaluation mode so dropout is disabled, while autograd remains enabled for the input. Evaluation mode and disabled gradients are different settings. No optimiser step or weight update is performed; model fingerprints are checked.
+\subsection{Occlusion sensitivity}
+For every recorded patch $p$:
+\[
+\Delta_c(p)=z_c(x)-z_c(x^{(p)}),\qquad
+M_{ij}=\frac{\sum_{p:\,(i,j)\in p}\Delta_c(p)}{\#\{p:(i,j)\in p\}}.
+\]
+The patch is $5\times5$ and replaces intensities with 0.5. Top-left coordinates are $0,2,\ldots,22,23$ on each axis: $13^2=169$ positions. Including 23 covers the final row and column. Overlap averaging avoids counting frequently covered pixels more often merely because of the scan geometry.
+
+The heatmap displays $\max(M_{ij},0)$, while the selected-patch readout preserves the signed $\Delta_c(p)$. No highlight means no positive average drop; it does not mean no possible effect. The scan replays saved measurements offline rather than running a model in the browser.
+\subsection{Defend the boundaries}
+The ten examples were fixed by the earlier validation-demo policy. Methods use that frozen CNN and those validation images; they do not retrain, retune or recompute test scores. Map brightness is normalised separately, so do not compare absolute magnitudes across images or methods. Results depend on the selected target and occlusion baseline/size; gray masking can be out of distribution. These maps do not prove causality, segmentation boundaries or the cause of low shirt recall. W10 explicitly warns that methods can disagree.
+
 \clearpage\section{Where the claims come from}
 Paths are relative to the project root. The HTML is an evidence-backed presentation of these local records, not an independent source of new measurements.
 \begingroup\small\raggedright
@@ -431,6 +478,8 @@ Paths are relative to the project root. The HTML is an evidence-backed presentat
 \path{notebooks/02-logistic-regression-baseline.ipynb}, \path{notebooks/03-logistic-regression-regularization.ipynb}, \path{notebooks/04-knn-comparison.ipynb}.
 \item[CNN architecture, curves and seed checks]
 \path{notebooks/05-cnn-baseline.ipynb}, \path{notebooks/06-cnn-improvements.ipynb}, \path{notebooks/07-cnn-seed-stability.ipynb}, \path{notebooks/08-validation-comparison.ipynb}.
+\item[CNN interpretation and lecture]
+\path{presentation/editorial/build_interpretation.py}; recorded maps and signed patch measurements in \path{presentation/editorial/interpretation.json}. Instructor lecture \path{../W10/10-CNNs-block2.pdf}, pages 56--60: interpreting CNNs, feature maps, occlusion, gradient saliency and caveats.
 \item[Final frozen evaluation]
 \path{scripts/final_evaluation.py}; \path{results/final-evaluation-v1/run-metadata.json}; \path{results/final-evaluation-v1/metrics.csv}.
 \item[Category metrics and directional errors]
@@ -500,6 +549,15 @@ Answer the question first, then give one project-specific piece of evidence. The
 \qa{Were the displayed mistakes chosen randomly?}{The directional comparison uses the first saved test index matching each error direction. These are genuine illustrative cases, not a random sample. The separate optional error gallery uses its saved seeded sample; neither proves causation.}
 \qa{Does the CNN perform best on every class?}{No. It is best overall, but kNN ankle-boot recall is 97.3\% versus 97.0\% for CNN, only three images. The model walkthrough also includes inputs where the CNN can be wrong even when a baseline is correct.}
 
+\clearpage\section{Questions: saliency and occlusion}
+\qa{How do feature maps and saliency differ?}{Feature maps are internal channel activations for an image. Gradient saliency relates a chosen output score to changes in input pixels. A bright internal activation is not automatically a pixel's contribution to the final class decision.}
+\qa{What does gradient saliency measure?}{The absolute derivative of the selected raw class logit with respect to each normalised input pixel. It is a local sensitivity, can be noisy and loses direction when taking the absolute value. It is not a causal explanation or a probability map.}
+\qa{What does occlusion measure, and why this patch?}{We cover each 5-by-5 region with gray intensity 0.5, moving by two pixels and including the final edge. We record original minus occluded target logit at 169 positions. Size, stride and baseline are transparent practical diagnostic choices, not settings proven optimal. Gray patches may be unnatural, so interpretations depend on the perturbation.}
+\qa{Why explain a logit rather than a probability, and why keep the class fixed?}{A logit is the class score before softmax. Using it avoids mixing the score's local sensitivity with softmax's competition between classes; a logit drop is not a probability-point drop. Holding the target class fixed makes all patch positions answer the same question, even if the predicted winner changes.}
+\qa{Why can a patch raise the score, and why is it not highlighted?}{A negative original-minus-covered score means the patch raised the chosen logit. The readout keeps that sign; the pixel map averages signed changes from covering patches and displays only positive averages. Blank areas therefore mean no positive average drop under this method, not no influence. Independently normalised brightness cannot compare absolute effects between maps.}
+\qa{Does computing gradients mean you retrained or used test data?}{No. The frozen model stays in evaluation mode with dropout disabled. Autograd differentiates the selected output with respect to the input, without optimiser updates. We use the ten existing deterministic validation examples, verify the checkpoint and retain all final test results unchanged.}
+\qa{Do these maps explain why shirts are harder overall?}{No. On validation Shirt \#32, explaining predicted Coat and actual Shirt targets asks different score-specific questions about one input. It cannot establish the cause of lower test shirt recall or greater within-class variation. The methods may disagree; neither is ground-truth attention or a segmentation mask.}
+
 \clearpage\section{Questions: limitations and next steps}
 \qa{Why does validation accuracy exceed test accuracy?}{The datasets differ, and model selection can adapt to the validation set. The CNN gap is about 0.54 percentage points. That observation alone does not identify a cause or establish a statistically significant change.}
 \qa{Can you conclude convolution caused the whole improvement?}{No. Capacity, optimisation and representation differ together. A controlled ablation would hold other factors fixed. We can conclude that the selected CNN configuration outperformed the evaluated baselines on this benchmark.}
@@ -511,11 +569,11 @@ Answer the question first, then give one project-specific piece of evidence. The
 \begin{enumerate}
 \item Is the balance between motivation, implementation choices and results appropriate for the final presentation?
 \item Is the distinction between one fixed stratified split and cross-validation clear enough?
-\item Do the CNN walkthrough and checkpoint explanation have the right technical depth?
+\item Do the CNN walkthrough, saliency/occlusion comparison and checkpoint explanation have the right technical depth?
 \item Does the shirt analysis separate evidence from plausible explanations clearly?
 \item Which section should I shorten or develop further before the final presentation?
 \end{enumerate}
-\subsection{Feedback to capture tomorrow}
+\subsection{Feedback to capture at the rehearsal}
 \textbf{Keep:}\ \hrulefill\par\vspace{4mm}
 \textbf{Clarify:}\ \hrulefill\par\vspace{4mm}
 \textbf{Change before the final:}\ \hrulefill
