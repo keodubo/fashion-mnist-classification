@@ -8,7 +8,7 @@ import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
+from matplotlib.colors import LinearSegmentedColormap, Normalize
 import numpy as np
 import torch
 
@@ -45,10 +45,19 @@ def explain(model, image, background):
     return values[0], values[-1], phi
 
 
-def plot(evidence):
+def plot(evidence, *, for_slide=False):
     phi = np.array(evidence["contributions"])
     brightness = np.array(evidence["mean_intensity"])
     fig, (a, b) = plt.subplots(1, 2, figsize=(12, 4.7), layout="constrained")
+    cmap = "coolwarm"
+    if for_slide:
+        cmap = LinearSegmentedColormap.from_list("slide_intensity", ["#8fb2dd", "#dfdbce", "#e89879"])
+        fig.set_facecolor("#20231f")
+        for ax in (a, b):
+            ax.set_facecolor("#20231f")
+            ax.tick_params(colors="#c0c3b9")
+            ax.xaxis.label.set_color("#eeeae1")
+            ax.spines["bottom"].set_color("#92998c")
     order = np.argsort(-np.abs(phi).mean(0))
     a.axvline(0, color="#999999", lw=1)
     for y, j in enumerate(order):
@@ -58,21 +67,23 @@ def plot(evidence):
             ids = ids[np.argsort(phi[ids, j])]
             offsets = np.arange(len(ids)) - (len(ids) - 1) / 2
             dots = a.scatter(phi[ids, j], y + offsets * min(.08, .68 / len(ids)),
-                             c=brightness[ids, j], cmap="coolwarm", norm=Normalize(0, 1),
-                             s=13, alpha=.85, linewidths=0)
+                             c=brightness[ids, j], cmap=cmap, norm=Normalize(0, 1),
+                             s=17, alpha=.85, linewidths=0)
     a.set_yticks(range(4), [REGIONS[i] for i in order])
     a.invert_yaxis()
     a.set_title("100 validation images", loc="left", fontweight="bold")
     a.set_xlabel("SHAP value for Coat probability")
-    fig.colorbar(dots, ax=a, orientation="horizontal", shrink=.62, pad=.18,
+    legend = fig.colorbar(dots, ax=a, orientation="horizontal", shrink=.62, pad=.18,
                  label="Mean region intensity (0–1)")
+    legend.ax.tick_params(labelsize=12)
+    legend.ax.xaxis.label.set_size(13)
     local = np.array(evidence["local_contributions"])
     x = evidence["base"]
     order = np.argsort(-abs(local))
     for y, j in enumerate(order):
         delta = local[j]
         b.barh(y, delta, left=x, height=.55, color="#ac364b" if delta > 0 else "#326b9f")
-        b.text(x + delta / 2, y - .34, f"{delta:+.3f}", ha="center", fontsize=10)
+        b.text(x + delta / 2, y - .34, f"{delta:+.3f}", ha="center", fontsize=13)
         x += delta
         if y < 3:
             b.plot([x,x], [y+.275,y+.725], ls=":", color=".45", lw=1)
@@ -86,7 +97,20 @@ def plot(evidence):
     for ax in (a,b):
         ax.spines[["top","right","left"]].set_visible(False)
         ax.tick_params(axis="y", length=0)
-    fig.savefig(HERE / "coat-shap.png", dpi=160)
+        ax.tick_params(labelsize=13)
+        ax.xaxis.label.set_size(14)
+    if for_slide:
+        for ax in (a, b):
+            ax.set_title(ax.get_title(loc="left"), loc="left", color="#eeeae1", fontweight="bold")
+        for label in b.texts:
+            label.set_color("#eeeae1")
+        for bar, region in zip(b.patches, order):
+            bar.set_facecolor("#c3ce9c" if local[region] > 0 else "#dca5ad")
+        legend.ax.tick_params(colors="#c0c3b9")
+        legend.ax.xaxis.label.set_color("#eeeae1")
+        legend.outline.set_edgecolor("#92998c")
+    filename = "coat-shap-slide.png" if for_slide else "coat-shap.png"
+    fig.savefig(HERE / filename, dpi=160)
     plt.close(fig)
 
 
@@ -118,6 +142,7 @@ def main():
                     base=base, local_id=32, prediction=pred, local_contributions=local.tolist())
     (HERE / "coat-shap.json").write_text(json.dumps(evidence, indent=2) + "\n")
     plot(evidence)
+    plot(evidence, for_slide=True)
     print(base, pred, local, np.abs(results).mean(0))
 
 

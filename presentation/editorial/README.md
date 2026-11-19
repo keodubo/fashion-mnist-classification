@@ -27,6 +27,8 @@ Input controls keep their normal keyboard behaviour. For example, arrows on the 
 
 ## Timing and evidence
 
+The [static slide backup](../output/fashion-mnist-slides.pdf) follows the same order and uses representative demo states, including the CNN tuning tab and full confusion matrix. The [speaking guide](../output/presentation-script.pdf) includes stopwatch checkpoints and priority defence questions.
+
 The first 16 slides target 780 seconds (13 minutes). Saliency and occlusion are on slide 8; the SHAP beeswarm and waterfall are on slide 14. Stop on slide 16 for questions. Press O to jump to appendix slides 17–20.
 
 The original metrics and examples in `data.json` remain unchanged: real observations, recorded model walkthroughs, exact class counts, the saved final results and genuine directional error examples. The new interpretation exporter performs validation-only forward and input-gradient passes through the frozen CNN. No training, test inference, test-based tuning or change to reported results was performed. Activations are recorded outputs; the scan is illustrative. The feature-map intensity scale is shared within each original layer tensor, not across layers.
