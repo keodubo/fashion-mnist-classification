@@ -31,6 +31,10 @@
     'scripts/final_evaluation.py',
     'presentation/editorial/evidence-manifest.json',
     'presentation/editorial/interpretation.json',
+    'presentation/editorial/knn-training.json',
+    'presentation/editorial/coat-shap.json',
+    'presentation/editorial/build_shap.py',
+    'W12/12-Ethics-and-xAI.pdf — pages 28–29 (parent course folder)',
     'presentation/editorial/build_interpretation.py',
     'W10/10-CNNs-block2.pdf — pages 56–60 (parent course folder)',
   ];
@@ -343,7 +347,7 @@
   function showNotes() {
     const s = scenes[current], original = D.notes[current];
     $('#notes-title').textContent = s.dataset.title;
-    $('#notes-time').textContent = `SCENE ${current + 1} / TARGET ${s.dataset.time} SECONDS`;
+    $('#notes-time').textContent = s.dataset.appendix ? `Q&A APPENDIX / SLIDE ${current + 1}` : `SCENE ${current + 1} / TARGET ${s.dataset.time} SECONDS`;
     let text = D.scene_notes?.[String(current)] || original.notes;
     if (current >= 4 && current <= 6) text += '\n\nInteractive walkthrough: use the same validation class across the three model scenes. Examples are the first validation observation of each class, not selected by correctness. All three predictions match the original saved outputs. These are recorded model outputs; the browser is not fitting a model. Feature maps show eight channels after pooling, normalised with a common scale within each tensor. Logistic-regression colour shows signed pixel × weight contributions for the predicted class, excluding its intercept.';
     $('#notes-content').textContent = text;
@@ -365,7 +369,7 @@
     ['Why epoch 12, if a later epoch had higher accuracy?', 'Within-run checkpoint selection used lowest validation loss, which occurred at epoch 12. Between configurations, validation accuracy at the restored checkpoints determined selection. The two decisions use different predeclared rules.'],
     ['Are these real features and probabilities?', 'Yes. They were computed using the frozen checkpoints on deterministic validation examples and checked against saved predictions. The browser animates their presentation; it does not train or run arbitrary new inference.'],
     ['What does the logistic-regression heatmap mean?', 'Each colour is the signed product of this pixel value and the weight for the predicted class. The sum plus the intercept equals that class logit. It is not a causal explanation. Different maps are normalised separately.'],
-    ['What evidence supports overfitting?', 'CNN training loss keeps falling after epoch 12 while validation loss does not beat its minimum. For logistic regression, weaker regularisation raises training accuracy and eventually reduces validation accuracy. Ordinary kNN training accuracy is optimistic because queries can include themselves as neighbours.'],
+    ['What evidence supports overfitting?', 'CNN training loss keeps falling after epoch 12 while validation loss does not beat its minimum. For logistic regression, weaker regularisation raises training accuracy and eventually reduces validation accuracy. Self-excluded kNN training accuracy was 85.27%, close to 85.04% on test.'],
     ['Is logistic regression underfitting?', 'Its linear pixel representation may limit fit, but its lower accuracy alone does not prove underfitting. Training accuracy is 87.42% and validation 85.40%; the evidence supports a limited representation plus some generalisation gap.'],
     ['Why divide by 255?', 'It scales pixel intensities into [0,1]; it is not feature-wise standardisation. Because all pixels are scaled by the same constant, this step alone does not change Euclidean nearest-neighbour rankings.'],
     ['What does per-class accuracy mean here?', 'We report recall: correct predictions among actual members of a class. This avoids the misleadingly high one-versus-rest accuracy that the many negative examples could produce.'],

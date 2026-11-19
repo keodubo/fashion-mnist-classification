@@ -1,5 +1,6 @@
 """Bundle the HTML, CSS, JavaScript and real project data into one offline file."""
 from pathlib import Path
+import base64
 import json
 
 HERE = Path(__file__).resolve().parent
@@ -11,6 +12,8 @@ payload["scene_notes"] = json.loads((HERE / "scene-notes.json").read_text())
 data = json.dumps(payload, separators=(",", ":"))
 assert json.loads(data)["demos"]
 assert "</script" not in data.lower()
+chart = base64.b64encode((HERE / "coat-shap.png").read_bytes()).decode("ascii")
+template = template.replace("/* SHAP IMAGE */", "data:image/png;base64," + chart)
 html = template.replace("/* STYLES */", (HERE / "styles.css").read_text())
 html = html.replace("/* DATA */", data).replace("/* SCRIPT */", (HERE / "interpretation.js").read_text() + "\n" + (HERE / "app.js").read_text())
 assert "/* DATA */" not in html and "/* SCRIPT */" not in html

@@ -1,4 +1,5 @@
 \documentclass[11pt,a4paper]{article}
+\usepackage{graphicx}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern,microtype}
@@ -44,7 +45,7 @@
 \vspace{12mm}
 {\Large Presentation script\\and defence guide}\par
 \vspace{12mm}
-Prepared for the feedback rehearsal with Professor \'Alvaro Rubio Garc\'ia. The spoken route follows the current fifteen-scene HTML presentation; the explanations and question bank are supporting material.
+Prepared for the feedback rehearsal with Professor \'Alvaro Rubio Garc\'ia. The spoken route follows the current sixteen-slide presentation, followed by four Q\&A slides; the explanations and question bank are supporting material.
 \vspace{7mm}
 \textbf{The story}\par
 The same clothing images can be classified using nearby examples, weighted pixels or learned spatial patterns. A controlled comparison shows which approach performs best, while its errors show what the overall score hides.
@@ -54,7 +55,7 @@ The same clothing images can be classified using nearby examples, weighted pixel
 \item Read the ``Say aloud'' passage with the corresponding scene open.
 \item Close the guide and explain the same idea in your own words.
 \item Answer the check question before advancing. Use the final question bank to rehearse follow-ups.
-\item Time one uninterrupted run. The planned route is \textbf{14 minutes}; this is a target, not a measured delivery time. Do not read the technical notes aloud.
+\item Time one uninterrupted run. The planned route is \textbf{13 minutes}; this is a target, not a measured delivery time. Do not read the technical notes aloud.
 \end{enumerate}
 \vfill
 \textbf{Evidence rule}\par
@@ -65,20 +66,21 @@ Results below come from saved project outputs. No retraining, new test-based sel
 \toprule
  & Scene & Time & Finish\\\midrule
 1 & How models see clothing & 0:45 & 0:45\\
-2 & Fashion-MNIST & 0:30 & 1:15\\
-3 & From an image to 784 numbers & 0:40 & 1:55\\
-4 & Keeping the comparison fair & 1:00 & 2:55\\
-5 & kNN: the nearest examples & 1:05 & 4:00\\
-6 & Logistic regression: weighted pixels & 1:05 & 5:05\\
-7 & Inside the CNN & 1:25 & 6:30\\
-8 & Which pixels matter? & 1:00 & 7:30\\
-9 & Choosing the settings & 1:00 & 8:30\\
-10 & When training stops helping & 0:55 & 9:25\\
-11 & Final test performance & 1:00 & 10:25\\
-12 & Accuracy varies by category & 0:55 & 11:20\\
-13 & Shirt recall and directional errors & 1:15 & 12:35\\
-14 & What the experiment cannot establish & 0:50 & 13:25\\
-15 & The CNN performed best overall & 0:35 & 14:00\\\bottomrule
+2 & Fashion-MNIST & 0:35 & 1:20\\
+3 & From an image to 784 numbers & 0:55 & 2:15\\
+4 & Keeping the comparison fair & 1:10 & 3:25\\
+5 & kNN: the nearest examples & 0:55 & 4:20\\
+6 & Logistic regression: weighted pixels & 0:55 & 5:15\\
+7 & Inside the CNN & 1:10 & 6:25\\
+8 & Which pixels matter? & 0:40 & 7:05\\
+9 & Choosing the settings & 0:45 & 7:50\\
+10 & When training stops helping & 0:35 & 8:25\\
+11 & Final test performance & 0:35 & 9:00\\
+12 & Accuracy varies by category & 0:35 & 9:35\\
+13 & Shirt recall and directional errors & 0:50 & 10:25\\
+14 & Which regions push the CNN toward Coat? & 1:00 & 11:25\\
+15 & What the experiment cannot establish & 0:50 & 12:15\\
+16 & The CNN performed best overall & 0:45 & 13:00\\\bottomrule
 \end{tabularx}
 \subsection{Keep the professor's priorities visible}
 Explain your actual choices and results. Avoid giving three textbook lectures about the models. The relevant questions are: what information did each model receive, which settings were selected and why, how was leakage avoided, and what do the errors tell us?
@@ -91,13 +93,11 @@ Explain your actual choices and results. Avoid giving three textbook lectures ab
 \item Keep the question bank available separately. Do not project it during the timed story.
 \end{itemize}
 \subsection{If you run long}
-Keep the split, model choices, final results and shirt analysis. Keep the interpretation slide to its one-minute comparison. Shorten optional interactions, exact parameter arithmetic and seed details. Reserve detailed answers for discussion.
+Keep the split, model choices, final results and shirt analysis. Keep the interpretation slide to its 40-second comparison. Shorten optional interactions, exact parameter arithmetic and seed details. Reserve detailed answers for discussion.
 
 \slide{1}{How models see clothing}{45 seconds}
 \say
-``Recognising an item of clothing looks simple to us, but a model receives pixel values rather than a description. My project compares three approaches to classifying these images: k-nearest neighbours, logistic regression and a convolutional neural network.
-
-The aim is to compare their performance under the same data split and understand their mistakes. I will explain the preparation and model choices, then check whether a strong overall score hides difficult categories.''
+We want to predict a clothing category from a picture. A catalogue could use that prediction to help organise new items. This is supervised multiclass classification: our target is one of ten clothing labels. Logistic regression is our baseline. We compare it with a nearest-neighbour classifier and a CNN to see what the extra complexity buys us and which mistakes remain.
 \understand
 \begin{itemize}
 \item \textbf{Input $X$:} a grayscale clothing image. \textbf{Target $y$:} one of ten known categories.
@@ -110,11 +110,9 @@ Let the image collage establish the subject. Name the three approaches; save the
 \selfcheck{What is the model given, what must it predict, and why is this supervised classification?}
 \transition{``First, what exactly are the images?''}
 
-\slide{2}{Fashion-MNIST}{30 seconds}
+\slide{2}{Fashion-MNIST}{35 seconds}
 \say
-``Fashion-MNIST contains 70,000 labelled grayscale images, each only 28 by 28 pixels, across ten clothing categories. The publisher provides 60,000 development images and a separate 10,000-image test set. Each category is equally represented.
-
-This gives us a controlled classification benchmark, although it is much simpler than recognising clothes in a phone photograph.''
+Fashion-MNIST gives us 70,000 labelled grayscale images in a common format. Its balance makes accuracy easy to interpret: each category has equal representation and we give each mistake equal cost. Accuracy is our primary metric. We also report macro-F1 and class recall because a good overall score can hide a weak category.
 \understand
 \begin{itemize}
 \item Ten classes: T-shirt/top, trouser, pullover, dress, coat, sandal, shirt, sneaker, bag and ankle boot.
@@ -127,11 +125,9 @@ Point to a few real dataset images and the 70,000 / 10-category statistics. Avoi
 \selfcheck{Why is this dataset useful for comparison, and why does success here not establish performance on phone photos?}
 \transition{``Those small images still need to become model inputs.''}
 
-\slide{3}{From an image to 784 numbers}{40 seconds}
+\slide{3}{From an image to 784 numbers}{55 seconds}
 \say
-``Each image starts as 784 grayscale pixel values. We divide intensities by 255 so that they lie between zero and one. For kNN and logistic regression, the 28-by-28 grid is flattened into a vector. The CNN receives the grid with one grayscale channel.
-
-All models therefore use the same image information, but represent its structure differently. We also inspect the labels, image values, class counts and exact duplicates before comparing models.''
+Each image has 784 unsigned eight-bit pixel values. The target is an integer category label. Our exploration found no missing values, invalid labels or exact duplicates in the development data. About half the training pixels are zero. We kept the observations and divided intensities by 255. That fixed transformation needs no fitted statistics. Logistic regression and kNN receive flattened pixels; the CNN receives the original grid in one channel.
 \understand
 \begin{itemize}
 \item $28\times28=784$. Normalisation is $x'=x/255$, not standardisation by a fitted mean and standard deviation.
@@ -145,13 +141,9 @@ The pixel scan starts automatically, updating intensity, normalisation and its p
 \selfcheck{Does flattening delete pixels? What spatial structure does a CNN explicitly exploit?}
 \transition{``Before training, the data must be divided fairly.''}
 
-\slide{4}{Keeping the comparison fair}{60 seconds}
+\slide{4}{Keeping the comparison fair}{70 seconds}
 \say
-``From the 60,000 development images, we saved one fixed split: 48,000 for training and 12,000 for validation. Each class has 4,800 training and 1,200 validation images. The official test set has 1,000 per class. Every class is ten percent of every subset.
-
-We used StratifiedGroupKFold to take its first split: fold zero for validation and the other four folds for training. We did not rotate through all five folds, so this was not five-fold cross-validation.
-
-Stratification preserves class proportions. Grouping keeps identical images together, although no exact duplicates were found. Every model used the same saved split. The official test set was supplied by Fashion-MNIST; we checked its balance rather than creating it.''
+The publisher supplied the 10,000-image test set. We split the remaining 60,000 into 48,000 training and 12,000 validation images. We took the first split from StratifiedGroupKFold. Stratification preserved class proportions, and grouping would have kept identical images together. Each category was exactly ten percent of every split, so resampling was unnecessary. We used one validation holdout for tuning. We fitted the models on training data, compared candidate settings on validation, and froze the checkpoints before scoring the test set once.
 \understand
 \begin{itemize}
 \item \textbf{Training} fits weights or stores kNN examples. \textbf{Validation} selects settings and checkpoints. \textbf{Test} evaluates the frozen choices.
@@ -164,13 +156,9 @@ Let the subset breakdown finish. Point to the equal 10\% shares. Keep ``one fixe
 \selfcheck{What is the difference between stratification, grouping and cross-validation?}
 \transition{``With the split fixed, the first model compares an image with stored examples.''}
 
-\slide{5}{kNN: the nearest examples}{65 seconds}
+\slide{5}{kNN: the nearest examples}{55 seconds}
 \say
-``For kNN, we compare the normalised pixel vector with the training images using Euclidean distance. We tried three, five and nine neighbours; three gave the highest validation accuracy, about 85.38 percent. Each neighbour receives equal voting weight.
-
-For this actual validation coat, the three nearest training images include two pullovers and one coat. The majority vote is therefore pullover, which is wrong. This illustrates the limitation: nearby pixel patterns do not always mean the same clothing category.
-
-kNN is a useful similarity baseline, but it stores the training examples and must search them at prediction time.''
+For kNN we tried three, five and nine neighbours. Three won on validation. Here two of the three nearest images are pullovers, so the coat is misclassified. To measure training accuracy, each image voted using only the three nearest other images. That gave 85.27 percent, close to 85.04 percent on test. Its test advantage over the logistic baseline was just 0.71 percentage points.
 \understand
 \[
  d(x,z)=\sqrt{\sum_{j=1}^{784}(x_j-z_j)^2}.
@@ -180,20 +168,16 @@ kNN is a useful similarity baseline, but it stores the training examples and mus
 \item Default example: validation Coat \#22. Neighbours: training \#31811 Pullover, \#37819 Pullover and \#2785 Coat. Distances approximately 4.836, 5.038 and 5.103.
 \item Two of three votes is not a calibrated 66.7\% chance of correctness; it is the local vote fraction.
 \item $k=3$ beat $k=5$ by only seven validation images. Describe a small observed advantage, not a universal optimum.
-\item Ordinary training-set scoring includes the query itself as a neighbour. Without a leave-one-out evaluation, do not use that optimistic score to diagnose overfitting confidently.
+\item Ordinary training-set scoring includes the query itself as a neighbour. Excluding each query by index gives 40,931 correct out of 48,000 (85.27\%).
 \end{itemize}
 \screen
 Use the same coat throughout the three walkthroughs. Point to the labels of its neighbours and the resulting vote; replay once if useful.
 \selfcheck{Why can kNN misclassify this coat even though the nearest images look similar?}
 \transition{``The next model learns how much each pixel position should contribute.''}
 
-\slide{6}{Logistic regression: weighted pixels}{65 seconds}
+\slide{6}{Logistic regression: weighted pixels}{55 seconds}
 \say
-``Logistic regression learns a weighted score for each category from the 784 pixels. The selected model uses L2 regularisation with C equal to 0.1. That setting performed best on validation among the four values we tried.
-
-For the same coat, the model gives its largest probability to pullover, roughly 32.8 percent, followed by coat at 28.8 percent. It is therefore also wrong on this image. The contribution map shows how pixel values and learned weights combine to produce a class score.
-
-It is a fast, interpretable linear baseline, but its score is an additive combination of fixed pixel positions rather than learned local image features.''
+Logistic regression gives each pixel a weight for each class. Adding the weighted pixels and intercept gives a class score. The heatmap shows contributions to the predicted score. Of four L2 regularisation settings, C equal to 0.1 had the highest validation accuracy. Our baseline reached 87.42 percent on training and 84.33 percent on test. Its three-point gap is modest. A linear score also limits how this model can combine neighbouring pixels into patterns.
 \understand
 For class $c$, the model forms a logit $z_c=w_c^Tx+b_c$, then uses multiclass softmax:
 \[
@@ -210,15 +194,9 @@ Show the input, contribution map and probability ranking. If asked, the displaye
 \selfcheck{What does changing $C$ do, and why does this remain a classification model despite its name?}
 \transition{``The CNN instead learns local patterns while preserving the image grid.''}
 
-\slide{7}{Inside the CNN}{85 seconds}
+\slide{7}{Inside the CNN}{70 seconds}
 \say
-``The selected CNN contains two convolutional blocks. The first learns 32 feature maps and the second 64, using three-by-three kernels. Each block applies ReLU and two-by-two max pooling. Pooling reduces the spatial dimensions from 28 to 14 and then to seven.
-
-We flatten the resulting features, pass them through a 128-unit dense layer with ReLU, apply dropout of 25 percent during training, and produce ten class scores. These feature maps are recorded outputs from the actual model for the selected image.
-
-For this coat, the CNN correctly predicts coat with about 96.3 percent softmax probability. This illustrates the processing; the full test set establishes overall performance.
-
-ReLU introduces nonlinearity, pooling summarises local responses, and dropout helps control overfitting. We compared wider and regularised variants on validation data.''
+The CNN keeps the grid. The first convolution learns 32 local filters and the second learns 64. Pooling reduces the spatial dimensions, then a 128-unit dense layer combines the features. We used dropout of 0.25 and restored epoch 12. At that checkpoint accuracy was 95.67 percent on training and 91.79 percent on test. That is a 7.46-point gain over our baseline. The remaining train-to-test gap motivated a closer look at the learning curves.
 \understand
 \[
 1\!\times\!28\!\times\!28\ \longrightarrow\ 32\!\times\!14\!\times\!14\
@@ -236,15 +214,9 @@ Follow input, first block, second block and class output. Show one channel chang
 \selfcheck{Why are ReLU and softmax used in different places, and how many convolutional layers are there?}
 \transition{``We can also ask which input pixels affect a chosen class score.''}
 
-\slide{8}{Which pixels matter?}{60 seconds}
+\slide{8}{Which pixels matter?}{40 seconds}
 \say
-``The feature maps showed activity inside the CNN. These two methods instead examine how the input affects a chosen class score.
-
-Gradient saliency highlights pixels where a small change would most affect that score. Occlusion covers a five-by-five patch with gray and records the score change as the patch moves. Brighter occlusion regions show larger positive score drops.
-
-The target class stays fixed during each scan. For this coat, we explain the Coat score. For the validation shirt predicted as Coat, we can switch between Coat and Shirt and ask different questions about the same image.
-
-These are recorded computations from the frozen model, not retraining. The maps can disagree and do not prove why shirts are generally difficult.''
+For this coat, gradient saliency highlights pixels where a small change would most affect the Coat score. Occlusion asks what happens to the same score when we cover a patch. As the patch moves, the readout shows the change in the raw score. Both maps describe sensitivity for this image. Later we will use SHAP to measure signed contributions to a probability.
 \understand
 \begin{itemize}
 \item \textbf{Gradient:} $S_{ij}=\left|\partial z_c/\partial x_{ij}\right|$, the magnitude of sensitivity of raw class logit $z_c$ to normalised input pixels. It is not a probability or a segmentation mask.
@@ -258,13 +230,9 @@ Keep Coat selected, compare the maps and let the patch scan play automatically. 
 \selfcheck{What does a positive occlusion score drop mean, and why must the target class stay fixed?}
 \transition{``Interpretation explains a fixed model; validation evidence explains why we chose its settings.''}
 
-\slide{9}{Choosing the settings}{60 seconds}
+\slide{9}{Choosing the settings}{45 seconds}
 \say
-``We selected settings using the same validation split for every model. For kNN, three neighbours gave the highest accuracy of the values tested. For logistic regression, C equal to 0.1 performed best.
-
-For the CNN, we compared a baseline, a longer-training version, a wider version, and that wider version with weight decay. The wider network reached 92.33 percent validation accuracy and was retained. Within each run, the checkpoint was chosen by minimum validation loss; configurations were compared by accuracy at those restored checkpoints.
-
-Additional seed runs put the two wider configurations close. Weight decay was more stable and had better mean shirt recall, so there is no universal winner. We retained the original seed-42 wider model for final evaluation.''
+We chose settings on validation accuracy. Within each CNN run we restored the epoch with lowest validation loss. Across configurations, the wider CNN without weight decay won. The two wider versions were very close across three seeds, and weight decay had higher mean shirt recall. We retained the original accuracy-first choice. Those seeds measure training variation on the same split.
 \understand
 \begin{tabularx}{\linewidth}{Xr}
 \toprule CNN configuration & Validation accuracy\\\midrule
@@ -283,13 +251,9 @@ Briefly switch the comparison tabs. Do not read every table cell or every seed s
 \selfcheck{Why can the best validation-loss checkpoint differ from the epoch with the best accuracy?}
 \transition{``The learning curves explain why the final epoch was not automatically the best.''}
 
-\slide{10}{When training stops helping}{55 seconds}
+\slide{10}{When training stops helping}{35 seconds}
 \say
-``Training loss keeps falling, but validation loss reaches its minimum at epoch 12. After that, fitting the training set more closely does not improve validation loss. That divergence is evidence of overfitting.
-
-The selected run stopped after epoch 17 because validation loss had not improved for five epochs, and restored epoch 12. At that checkpoint, training accuracy was 95.67 percent and validation accuracy 92.33 percent, a gap of 3.33 percentage points.
-
-The learning-rate scheduler and dropout help control training, but they do not guarantee that overfitting disappears. We keep the checkpoint selected by the established validation rule.''
+Training loss continued falling after epoch 12. Validation loss reached its minimum there, so later epochs improved training fit without improving that criterion. Training stopped at epoch 17 and restored epoch 12. That divergence is evidence of overfitting with further training.
 \understand
 \begin{itemize}
 \item One epoch means one pass through the training subset. A batch is a smaller group used for an optimisation update; batch size is 128.
@@ -303,13 +267,9 @@ Point to the validation-loss minimum and move the epoch control only enough to s
 \selfcheck{Why restore epoch 12 instead of using the weights from epoch 17?}
 \transition{``Once the models were fixed, we evaluated the official test set.''}
 
-\slide{11}{Final test performance}{60 seconds}
+\slide{11}{Final test performance}{35 seconds}
 \say
-``With the model choices frozen, logistic regression correctly classified 84.33 percent of the 10,000 test images, kNN 85.04 percent, and the CNN 91.79 percent. The CNN leads kNN by 6.75 percentage points.
-
-Its validation accuracy was 92.33 percent, so test accuracy is about half a percentage point lower. The test result supports the CNN as the strongest overall model among the configurations evaluated here.
-
-We also report macro F1, which summarises class-level precision and recall. The CNN leads on that metric too. These are results for this benchmark and this evaluation, rather than a guarantee for every future image.''
+The summary shows the size of the improvement. kNN gains less than one point over logistic regression. The CNN gains more than seven and also leads on macro-F1. It had already won on validation; final testing confirmed the choice. Which items does it still miss?
 \understand
 \begin{tabularx}{\linewidth}{Xrrr}
 \toprule Model & Validation & Test & Test macro F1\\\midrule
@@ -325,17 +285,13 @@ CNN & 92.33\% & 91.79\% & 0.9167\\\bottomrule
 \item Once test performance is known, changing settings to improve that score would contaminate its role as an independent final assessment.
 \end{itemize}
 \screen
-Pause on the results. Say the three test accuracies once, then explain the practical comparison. Keep validation and test values distinct.
+Pause on the results. Compare gains over the baseline and explain why the ranking matters. Keep validation and test values distinct.
 \selfcheck{What can the test result establish, and why should it not be used for another tuning round?}
 \transition{``But one overall score can hide a difficult category.''}
 
-\slide{12}{Accuracy varies by category}{55 seconds}
+\slide{12}{Accuracy varies by category}{35 seconds}
 \say
-``Overall accuracy averages across categories. To see what it hides, we examine recall: among the actual images of a class, how many were correctly identified?
-
-For the CNN, bag recall is 99 percent and trouser recall 98.6 percent, but shirt recall is only 67.6 percent. Because every class has 1,000 test images, these percentages are directly comparable.
-
-The confusion matrix then shows where the errors go. Rows are actual categories and columns are predicted categories. The diagonal contains correct predictions; off-diagonal cells show confusions. The CNN performs best overall, but that does not mean every category is equally reliable.''
+Each confusion-matrix row starts with a thousand actual items. Read across a row to see the predictions. The CNN recognises 99 percent of bags but only 67.6 percent of shirts. Equal class sizes make that difference particularly easy to interpret.
 \understand
 \[
 \operatorname{recall}_c=\frac{TP_c}{TP_c+FN_c},\qquad
@@ -352,15 +308,9 @@ Select Shirt, briefly compare with Bag, then show the matrix and identify one di
 \selfcheck{What is the difference between ``67.6\% of actual shirts were found'' and ``67.6\% of predicted shirts were correct''?}
 \transition{``The shirt errors have a clear directional pattern.''}
 
-\slide{13}{Shirt recall and directional errors}{75 seconds}
+\slide{13}{Shirt recall and directional errors}{50 seconds}
 \say
-``The CNN correctly identified 676 of the 1,000 actual shirts: shirt recall is 67.6 percent. The remaining 324 were assigned to other categories.
-
-There were 127 shirts predicted as T-shirt/top, compared with 63 errors in the reverse direction. For coat, the counts were 89 versus 32; for pullover, 71 versus 32. Confusion happens both ways, but more often from shirts into those categories.
-
-These pictures are actual saved error cases. They illustrate possible overlap in silhouette and the limited detail available at 28 by 28 pixels. Greater variation within shirts is another possibility, but we have not measured it or proven these causes.
-
-What we can establish is the balance of the classes, lower shirt recall, and the directional counts. Equal class sizes do not imply equal difficulty, and classification errors do not have to be symmetric.''
+Of the thousand actual shirts, 324 were missed. Look at the first pair: 127 shirts were called T-shirt or top, while only 63 T-shirts or tops were called shirt. The same asymmetry appears for coats and pullovers. Similar outlines are a plausible explanation at this low resolution. The counts establish the direction of the errors; the images alone cannot establish their cause.
 \understand
 \begin{tabularx}{\linewidth}{Xrr}
 \toprule Other category & Shirt $\to$ other & Other $\to$ Shirt\\\midrule
@@ -377,15 +327,22 @@ Pullover & 71 & 32\\\bottomrule
 \screen
 Point to one image pair and read its two directions. State the remaining pairs briefly. Keep ``observed'' separate from ``plausible explanation''.
 \selfcheck{How can the classes be balanced while shirt errors are both more frequent and asymmetric?}
-\transition{``Those findings are useful, provided we stay within the experiment's limits.''}
+\transition{``What pushed the CNN toward Coat on one validation shirt?''}
 
-\slide{14}{What the experiment cannot establish}{50 seconds}
+\slide{14}{Which regions push the CNN toward Coat?}{60 seconds}
 \say
-``There are four main limits. First, these are small benchmark images, so performance on ordinary photographs remains untested. Second, we used one validation split; repeated choices can adapt to that split, and three random seeds do not replace cross-validation.
+Both SHAP plots explain the CNN's Coat probability. On the left, each dot is one validation image. Its horizontal position shows how much that quadrant raised or lowered the probability. Colour gives its average brightness. Across these 100 images, upper right has the largest average absolute effect. On the right is one actual shirt predicted as Coat. Starting at the training-reference average of 14.0 percent, all four quadrants push toward Coat, reaching 58.3 percent. For this shirt, lower right contributes most, about 15.5 percentage points. The answer depends on our region boundaries and reference images.
+\understand
+The four features are $14\times14$ quadrants. For each of the 16 subsets, keep those regions from the image and fill the rest from one training reference at a time. Average Coat probability over 20 references, two per class. The Shapley value averages the change from adding a region over all possible orders. Values are exact for this four-region game and its finite background.
+\begin{center}\includegraphics[width=\linewidth]{../editorial/coat-shap.png}\end{center}
+\screen
+Read the beeswarm horizontally. Each row is a region; colour is its mean intensity. Read the waterfall from its baseline through four contributions. Mixed-quadrant images can be unrealistic. The background and region boundaries affect the result. See W12, pages 28--29.
+\selfcheck{Why can upper right rank first across images while lower right contributes most to this shirt?}
+\transition{What are the limits of these findings?}
 
-Third, the models differ in capacity and training as well as architecture, so the comparison does not isolate the effect of convolution alone. Fourth, the final evaluation used frozen checkpoints without retraining on all 60,000 development images.
-
-No exact development-to-test image overlaps were found, which is reassuring, but does not eliminate every possible source of dependence. These limits define how far the conclusion can travel.''
+\slide{15}{What the experiment cannot establish}{50 seconds}
+\say
+We used one validation split, so repeated choices could adapt to those images. The CNN also differs from the other models in capacity and training, so the comparison cannot isolate the benefit of convolution alone. Fashion-MNIST contains small, standardised images. My next experiment would evaluate the frozen CNN on independently labelled phone photos with different lighting and backgrounds.
 \understand
 \begin{itemize}
 \item A seed changes aspects of training randomness. A new split changes which images support fitting and validation. They assess different sources of variability.
@@ -398,11 +355,9 @@ Use the four visible limitations as the structure. Avoid adding a long list of s
 \selfcheck{Why do three seeds not replace multiple validation splits?}
 \transition{``Within those limits, the main conclusion is clear.''}
 
-\slide{15}{The CNN performed best overall}{35 seconds}
+\slide{16}{The CNN performed best overall}{45 seconds}
 \say
-``On the fixed Fashion-MNIST test set, the selected CNN performed best overall, reaching 91.79 percent accuracy. The comparison supports learning image features for this task, while the shirt analysis shows why overall accuracy is not enough: shirt recall remains 67.6 percent.
-
-The main lesson is to select models using validation evidence, evaluate frozen choices on the test set, and inspect the errors before deciding how reliable a model really is.''
+The CNN was the best of our three models on this benchmark. It improved test accuracy by 7.46 points over logistic regression. But if a catalogue particularly needs reliable shirt labels, overall accuracy hides a practical weakness: the CNN misses about a third of actual shirts. That is the result I would investigate before relying on it for new photographs. Thank you. What questions do you have?
 \understand
 \begin{itemize}
 \item Strongest claim: best \emph{among the evaluated configurations on this benchmark}.
@@ -410,8 +365,20 @@ The main lesson is to select models using validation evidence, evaluate frozen c
 \item The model comparison is empirical support, not proof that CNNs always win or that every improvement comes from convolution.
 \end{itemize}
 \screen
-Pause, finish the sentence and stop. For the feedback rehearsal, then invite feedback on structure, technical depth and the evidence behind the choices.
+Pause, finish the sentence and stop. Use O to jump directly to Q\&A slides 17--20.
 \selfcheck{Can you give the conclusion in two sentences without overstating what the experiment proves?}
+
+\clearpage\section{Q\&A slide guide}
+Stop after slide 16. Press \textbf{O} to open the index and choose the slide that matches the question. Budget one to two minutes for questions. These slides are outside the 13-minute route.
+
+\subsection{17. How did you prevent leakage?}
+Fit the classifiers. Divide raw pixel intensities by the known maximum of 255; this uses no estimated statistics. Choose C, k, CNN settings and checkpoint. All models use identical source indices. Only the first split from StratifiedGroupKFold was used. Freeze all three checkpoints, verify their hashes and validation predictions, then score once. Exact development/test overlaps: zero.
+\subsection{18. How was kNN training accuracy measured?}
+For each of the 48,000 fitted images, exclude its own index and search the other 47,999 images. Three Euclidean neighbours, one vote each. A three-way tie goes to the lowest class ID, matching the classifier. 40,931 $\div$ 48,000 = 85.27\%. Validation: 85.38\%. Test: 85.04\%. These close scores give little evidence of a large generalisation gap.
+\subsection{19. Why keep the epoch-12 CNN?}
+Validation loss reached its minimum at epoch 12. Training stopped at epoch 17 and restored that checkpoint. Validation accuracy chose the wider CNN without weight decay. The original seed-42 checkpoint was already selected. Mean accuracy: 92.400\% without weight decay and 92.339\% with it. Mean shirt recall favoured weight decay: 78.94\% vs. 75.81\%. All runs used one split.
+\subsection{20. What do these SHAP values measure?}
+The frozen CNN's Coat probability. One feature is a 14 $\times$ 14 quadrant. Absent quadrants come from the same reference image. Evaluate all 16 subsets of the four quadrants, averaging each over 20 training images (two per class). Average each region's marginal change over possible orders. The baseline plus four signed contributions recovers each prediction. The beeswarm covers ten validation images per class. Other backgrounds or region boundaries can change the values; mixed images may look artificial.
 
 \clearpage\section{Technical reference}
 This page is for follow-up questions, not the timed speech.
@@ -533,7 +500,7 @@ Answer the question first, then give one project-specific piece of evidence. The
 \qa{Why did the selected run stop at epoch 17 but keep epoch 12?}{The early-stopping rule tolerated five epochs without improved validation loss. Epoch 12 had the lowest validation loss; training ended at 17 and restored that checkpoint. The maximum allowed was 30 epochs.}
 \qa{Why loss rather than accuracy for checkpointing?}{Loss responds to the whole predicted distribution, including confidently wrong predictions; accuracy sees only the winning label. We used minimum validation loss within a run, then accuracy at restored checkpoints to compare configurations. That distinction must remain explicit.}
 \qa{What evidence suggests overfitting?}{The selected CNN's training loss continues falling after validation loss stops improving. At the retained checkpoint, train accuracy is 95.67\% and validation accuracy 92.33\%. This is evidence of some overfitting, not proof that the model generalises poorly overall.}
-\qa{Are the classical models underfitting or overfitting?}{Avoid a forced label. LR has a roughly 2.02-point train-validation gap and limited linear capacity, but that alone does not establish a pure diagnosis. kNN training scores are optimistic when queries include themselves as neighbours; no leave-one-out estimate was computed. We can defend their validation results and representational limits directly.}
+\qa{Are the classical models underfitting or overfitting?}{Avoid a forced label. LR has a roughly 2.02-point train-validation gap and limited linear capacity, but that alone does not establish a pure diagnosis. kNN training scores are optimistic when queries include themselves as neighbours; excluding the query gives 85.27\%, close to 85.04\% on test. We can defend their validation results and representational limits directly.}
 \qa{What did the seed checks establish?}{For the two wider configurations, three seeds show limited sensitivity to training randomness on the same split. Wider mean accuracy is 92.400\%, versus 92.339\% with weight decay. The latter is more stable and has higher mean shirt recall; the very small accuracy gap does not establish a robust universal winner.}
 \qa{Why not pick the best seed or the best shirt model after testing?}{That would change the selection policy using favourable outcomes. The retained original seed-42 wider model was fixed before final scoring. We should report alternatives transparently rather than switch using test performance.}
 

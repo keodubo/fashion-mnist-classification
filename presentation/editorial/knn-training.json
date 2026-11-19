@@ -1,0 +1,8 @@
+{
+  "correct": 40931,
+  "total": 48000,
+  "accuracy": 0.8527291666666666,
+  "checkpoint_sha256": "ea6ecc6f3b8adb599872c9278fba56f4093849afc81c96f5de1266bca741a78a",
+  "k": 3,
+  "self_excluded": true
+}

@@ -32,9 +32,9 @@ The CNN was preselected using validation data. All checkpoint fingerprints match
 
 ## Presentation mock
 
-- [Interactive HTML presentation](presentation/output/fashion-mnist-presentation.html): scientific editorial redesign with real dataset exploration, large selectable CNN activation plates, per-class analysis and presenter notes. The visible wordmark, toolbar and shortcut strip are removed. Fifteen scenes target 14 minutes before optional exploration. See [presentation guide](presentation/editorial/README.md) and [design rules](presentation/DESIGN.md). Earlier [HTML v2](presentation/output/fashion-mnist-interactive-v2.html) and [HTML v1](presentation/output/fashion-mnist-interactive-v1.html) are preserved.
+- [Interactive HTML presentation](presentation/output/fashion-mnist-presentation.html): scientific editorial redesign with real dataset exploration, large selectable CNN activation plates, per-class analysis and presenter notes. The visible wordmark, toolbar and shortcut strip are removed. Sixteen slides target 13 minutes, followed by four Q&A slides. See [presentation guide](presentation/editorial/README.md) and [design rules](presentation/DESIGN.md). Earlier [HTML v2](presentation/output/fashion-mnist-interactive-v2.html) and [HTML v1](presentation/output/fashion-mnist-interactive-v1.html) are preserved.
 - [Editable presentation v1](presentation/output/fashion-mnist-mock-v1.pptx): 12 main slides, a target duration of 12 minutes 30 seconds, and four backup slides.
-- [Slide-by-slide rehearsal guide](presentation/output/presentation-script.pdf) with [editable LaTeX source](presentation/output/presentation-script.tex), including the CNN saliency/occlusion demonstration and 59 professor questions.
+- [Slide-by-slide rehearsal guide](presentation/output/presentation-script.pdf) with [editable LaTeX source](presentation/output/presentation-script.tex), including saliency and occlusion, global and local SHAP plots, and the Q&A appendix.
 - [Earlier PPTX speaker notes and practice questions](presentation/output/presentation-notes-v1.md).
 - [Final evaluation report](docs/final-evaluation-results.md).
 

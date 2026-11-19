@@ -27,7 +27,7 @@ Input controls keep their normal keyboard behaviour. For example, arrows on the 
 
 ## Timing and evidence
 
-Fifteen scenes target 840 seconds, or 14 minutes. The new interpretation scene is number 8, immediately after the CNN walkthrough; the opening, split, CNN walkthrough, tuning and error sections have shorter targets to make room. Rehearse aloud to allow for interaction within the 12–15 minute limit. Supporting dialogs are outside the timed narrative.
+The first 16 slides target 780 seconds (13 minutes). Saliency and occlusion are on slide 8; the SHAP beeswarm and waterfall are on slide 14. Stop on slide 16 for questions. Press O to jump to appendix slides 17–20.
 
 The original metrics and examples in `data.json` remain unchanged: real observations, recorded model walkthroughs, exact class counts, the saved final results and genuine directional error examples. The new interpretation exporter performs validation-only forward and input-gradient passes through the frozen CNN. No training, test inference, test-based tuning or change to reported results was performed. Activations are recorded outputs; the scan is illustrative. The feature-map intensity scale is shared within each original layer tensor, not across layers.
 
@@ -61,6 +61,8 @@ To regenerate explanation data with the original local checkpoint and saved spli
 
 The exporter checks the frozen checkpoint fingerprint, deterministic validation membership, base probabilities and unchanged model state. A fresh clone needs the original local model/data artifacts to regenerate the maps; the already-bundled HTML and recorded JSON do not need them. No new dependencies were added.
 
-The updated [rehearsal script](../output/presentation-script.pdf) and [LaTeX source](../output/presentation-script.tex) cover all 15 scenes and 59 questions. The 14-minute route is a speaking target, not a measured rehearsal.
+The updated [rehearsal script](../output/presentation-script.pdf) and [LaTeX source](../output/presentation-script.tex) cover the 16 timed slides and four Q&A slides. Timing is a rehearsal target.
 
 Both automatic scans advance every 200 milliseconds (five positions per second), slowing the displayed values enough to follow during narration. They do not need to complete a full cycle during the timed slide.
+
+Regenerate the additional evidence with the project Python environment: run `presentation/editorial/score_knn.py` and `presentation/editorial/build_shap.py`, then run the packer. The kNN score excludes each training index from its neighbour set. The SHAP exporter evaluates every coalition of four image quadrants for the frozen CNN’s Coat probability, using 20 training reference images. All explanation targets are validation images.

@@ -37,7 +37,7 @@ Of 1,000 actual shirts, the CNN correctly classified 676. It classified 127 as T
 
 - Selected logistic regression: training 87.42%, validation 85.40%; gap 2.02 points. C=10 increased training accuracy and reduced validation accuracy, consistent with overfitting as regularisation weakened. The linear feature representation may also limit fit; pure underfitting has not been established.
 - Selected CNN: training 95.67%, validation 92.33%; gap 3.33 points. The lowest validation loss was at epoch 12; subsequent lower training loss without lower validation loss supports overfitting with further training. Early stopping restored epoch 12. Later higher validation accuracy does not override the predeclared lowest-loss checkpoint rule.
-- kNN: ordinary training-set predictions include self-neighbours and are optimistic. No leave-one-out training estimate was run, so a training-versus-validation diagnosis is unavailable. Validation selection among k=3,5,9 favoured 3.
+- kNN: ordinary training-set predictions include self-neighbours and are optimistic. A subsequent training-only check excluded each query index and correctly classified 40,931/48,000 images (85.27%), close to validation accuracy (85.38%). [Calculation](../presentation/editorial/score_knn.py) and [saved result](../presentation/editorial/knn-training.json). Validation selection among k=3,5,9 favoured 3.
 - CNN experiments: two architecture widths; four initial runs plus four additional seed runs = eight CNN training runs. The two wider configurations each have three seeds; the original seed-42 checkpoints are reused in that summary. Three seeds describe training variation, not uncertainty across data splits.
 
 ## Integrity and reproducibility
